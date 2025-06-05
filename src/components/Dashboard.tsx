@@ -102,19 +102,19 @@ export function Dashboard({ activeSection, onSectionChange }: DashboardProps) {
   }
 
   return (
-    <div className="space-y-4 lg:space-y-6">
+    <div className="space-y-3 sm:space-y-4 lg:space-y-6">
       {/* Overview Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-6">
         {stats.map((stat, index) => (
           <Card key={index} className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 lg:p-6">
-              <CardTitle className="text-xs lg:text-sm font-medium text-muted-foreground">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 p-2 sm:p-3 lg:p-6">
+              <CardTitle className="text-xs sm:text-sm lg:text-sm font-medium text-muted-foreground">
                 {stat.title}
               </CardTitle>
-              <stat.icon className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground" />
+              <stat.icon className="h-3 w-3 sm:h-4 sm:w-4 lg:h-4 lg:w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent className="p-3 lg:p-6 pt-0">
-              <div className="text-lg lg:text-2xl font-bold">{stat.value}</div>
+            <CardContent className="p-2 sm:p-3 lg:p-6 pt-0">
+              <div className="text-sm sm:text-lg lg:text-2xl font-bold">{stat.value}</div>
               <Badge variant="secondary" className="mt-1 lg:mt-2 text-xs">
                 <TrendingUp className="w-2 h-2 lg:w-3 lg:h-3 mr-1" />
                 {stat.change}
@@ -126,29 +126,29 @@ export function Dashboard({ activeSection, onSectionChange }: DashboardProps) {
 
       {/* Quick Actions */}
       <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-        <CardHeader className="p-4 lg:p-6">
-          <CardTitle className="flex items-center gap-2 text-lg lg:text-xl">
+        <CardHeader className="p-3 sm:p-4 lg:p-6">
+          <CardTitle className="flex items-center gap-2 text-base sm:text-lg lg:text-xl">
             <Activity className="w-4 h-4 lg:w-5 lg:h-5" />
             Quick Actions
           </CardTitle>
-          <CardDescription className="text-sm lg:text-base">
+          <CardDescription className="text-xs sm:text-sm lg:text-base">
             Common tasks and operations
           </CardDescription>
         </CardHeader>
-        <CardContent className="p-4 lg:p-6 pt-0">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
+        <CardContent className="p-3 sm:p-4 lg:p-6 pt-0">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-4">
             {quickActions.map((action, index) => (
               <Button
                 key={index}
                 variant="outline"
-                className="h-auto p-3 lg:p-4 flex flex-col items-center gap-2 lg:gap-3 hover:shadow-md transition-all duration-300"
+                className="h-auto p-2 sm:p-3 lg:p-4 flex flex-col items-center gap-1 sm:gap-2 lg:gap-3 hover:shadow-md transition-all duration-300"
                 onClick={action.action}
               >
-                <div className={`w-8 h-8 lg:w-12 lg:h-12 rounded-lg ${action.color} flex items-center justify-center`}>
-                  <action.icon className="w-4 h-4 lg:w-6 lg:h-6 text-white" />
+                <div className={`w-6 h-6 sm:w-8 sm:h-8 lg:w-12 lg:h-12 rounded-lg ${action.color} flex items-center justify-center`}>
+                  <action.icon className="w-3 h-3 sm:w-4 sm:h-4 lg:w-6 lg:h-6 text-white" />
                 </div>
                 <div className="text-center">
-                  <div className="font-semibold text-xs lg:text-sm">{action.title}</div>
+                  <div className="font-semibold text-xs sm:text-sm lg:text-sm">{action.title}</div>
                   <div className="text-xs text-muted-foreground hidden lg:block">{action.description}</div>
                 </div>
               </Button>
@@ -159,17 +159,17 @@ export function Dashboard({ activeSection, onSectionChange }: DashboardProps) {
 
       {/* Recent Activity */}
       <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-        <CardHeader className="p-4 lg:p-6">
-          <CardTitle className="flex items-center gap-2 text-lg lg:text-xl">
+        <CardHeader className="p-3 sm:p-4 lg:p-6">
+          <CardTitle className="flex items-center gap-2 text-base sm:text-lg lg:text-xl">
             <ArrowLeftRight className="w-4 h-4 lg:w-5 lg:h-5" />
             Recent Activity
           </CardTitle>
-          <CardDescription className="text-sm lg:text-base">
+          <CardDescription className="text-xs sm:text-sm lg:text-base">
             Latest system events and transactions
           </CardDescription>
         </CardHeader>
-        <CardContent className="p-4 lg:p-6 pt-0">
-          <div className="space-y-3 lg:space-y-4">
+        <CardContent className="p-3 sm:p-4 lg:p-6 pt-0">
+          <div className="space-y-2 sm:space-y-3 lg:space-y-4">
             {[
               { type: "User Created", user: "john.doe@example.com", time: "2 minutes ago", status: "success" },
               { type: "Account Activated", user: "Trading Account #1234", time: "5 minutes ago", status: "success" },
@@ -177,17 +177,17 @@ export function Dashboard({ activeSection, onSectionChange }: DashboardProps) {
               { type: "Transaction Executed", user: "$1,250.00 BUY EURUSD", time: "12 minutes ago", status: "success" },
             ].map((activity, index) => (
               <div key={index} className="flex items-center justify-between p-2 lg:p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
-                <div className="flex items-center gap-2 lg:gap-3">
-                  <div className={`w-2 h-2 rounded-full ${
+                <div className="flex items-center gap-2 lg:gap-3 min-w-0 flex-1">
+                  <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
                     activity.status === 'success' ? 'bg-green-500' : 
                     activity.status === 'info' ? 'bg-blue-500' : 'bg-yellow-500'
                   }`} />
-                  <div>
-                    <div className="font-medium text-xs lg:text-sm">{activity.type}</div>
-                    <div className="text-xs text-muted-foreground truncate max-w-[150px] lg:max-w-none">{activity.user}</div>
+                  <div className="min-w-0 flex-1">
+                    <div className="font-medium text-xs sm:text-sm">{activity.type}</div>
+                    <div className="text-xs text-muted-foreground truncate">{activity.user}</div>
                   </div>
                 </div>
-                <div className="text-xs text-muted-foreground">{activity.time}</div>
+                <div className="text-xs text-muted-foreground flex-shrink-0 ml-2">{activity.time}</div>
               </div>
             ))}
           </div>
