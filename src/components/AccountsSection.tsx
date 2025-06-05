@@ -1,0 +1,214 @@
+
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { 
+  ArrowLeft, 
+  Plus, 
+  Search, 
+  Edit, 
+  Trash2, 
+  DollarSign,
+  CreditCard,
+  Activity
+} from "lucide-react";
+import { useState } from "react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+interface AccountsSectionProps {
+  onBack: () => void;
+}
+
+export function AccountsSection({ onBack }: AccountsSectionProps) {
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Mock data
+  const accounts = [
+    {
+      id: "1",
+      number: 12345678,
+      balance: 15750.50,
+      currency: "USD",
+      status: "ACTIVE",
+      created_at: "2024-01-15",
+      person_id: "1",
+      source_id: "1",
+      owner: "John Doe",
+      source: "TradingView"
+    },
+    {
+      id: "2",
+      number: 87654321,
+      balance: 8900.25,
+      currency: "EUR",
+      status: "ACTIVE",
+      created_at: "2024-01-10",
+      person_id: "2",
+      source_id: "2",
+      owner: "Jane Smith",
+      source: "MetaTrader"
+    },
+  ];
+
+  const getStatusColor = (status: string) => {
+    return status === "ACTIVE" 
+      ? "bg-green-100 text-green-800" 
+      : "bg-red-100 text-red-800";
+  };
+
+  const formatCurrency = (amount: number, currency: string) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency,
+    }).format(amount);
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Button variant="outline" size="sm" onClick={onBack}>
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Dashboard
+          </Button>
+          <div>
+            <h1 className="text-2xl font-bold">Accounts Management</h1>
+            <p className="text-muted-foreground">Manage trading accounts and balances</p>
+          </div>
+        </div>
+        <Button onClick={() => setShowCreateForm(true)}>
+          <Plus className="w-4 h-4 mr-2" />
+          Add Account
+        </Button>
+      </div>
+
+      {/* Search and Filters */}
+      <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+        <CardContent className="p-6">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search accounts..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+            <Select defaultValue="all">
+              <SelectTrigger className="w-full md:w-[180px]">
+                <SelectValue placeholder="Filter by status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="ACTIVE">Active</SelectItem>
+                <SelectItem value="DEACTIVATED">Deactivated</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Create Account Form */}
+      {showCreateForm && (
+        <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+          <CardHeader>
+            <CardTitle>Create New Account</CardTitle>
+            <CardDescription>Add a new trading account to the system</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="person_id">Account Owner</Label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select account owner" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">John Doe</SelectItem>
+                    <SelectItem value="2">Jane Smith</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="source_id">Signal Source</Label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select signal source" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">TradingView</SelectItem>
+                    <SelectItem value="2">MetaTrader</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="token">MetaTrader API Token</Label>
+                <Input id="token" placeholder="Enter MetaTrader API token" />
+              </div>
+            </div>
+            <div className="flex gap-2 pt-4">
+              <Button type="submit">Create Account</Button>
+              <Button variant="outline" onClick={() => setShowCreateForm(false)}>
+                Cancel
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Accounts List */}
+      <div className="grid gap-4">
+        {accounts.map((account) => (
+          <Card key={account.id} className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center">
+                    <CreditCard className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-lg">
+                      Account #{account.number}
+                    </h3>
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-1">
+                        <DollarSign className="w-4 h-4" />
+                        {formatCurrency(account.balance, account.currency)}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Activity className="w-4 h-4" />
+                        {account.source}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 mt-2">
+                      <Badge className={getStatusColor(account.status)}>
+                        {account.status}
+                      </Badge>
+                      <Badge variant="outline">{account.owner}</Badge>
+                      <Badge variant="outline">{account.currency}</Badge>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" size="sm">
+                    <Edit className="w-4 h-4" />
+                  </Button>
+                  <Button variant="outline" size="sm">
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
