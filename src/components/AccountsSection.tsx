@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { 
   ArrowLeft, 
   Plus, 
@@ -24,9 +25,10 @@ interface AccountsSectionProps {
 export function AccountsSection({ onBack }: AccountsSectionProps) {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [editingAccount, setEditingAccount] = useState<any>(null);
 
   // Mock data
-  const accounts = [
+  const [accounts, setAccounts] = useState([
     {
       id: "1",
       number: 12345678,
@@ -51,7 +53,7 @@ export function AccountsSection({ onBack }: AccountsSectionProps) {
       owner: "Jane Smith",
       source: "MetaTrader"
     },
-  ];
+  ]);
 
   const getStatusColor = (status: string) => {
     return status === "ACTIVE" 
@@ -64,6 +66,19 @@ export function AccountsSection({ onBack }: AccountsSectionProps) {
       style: 'currency',
       currency: currency,
     }).format(amount);
+  };
+
+  const handleEditAccount = (account: any) => {
+    setEditingAccount(account);
+  };
+
+  const handleSaveEdit = () => {
+    if (editingAccount) {
+      setAccounts(accounts.map(acc => 
+        acc.id === editingAccount.id ? editingAccount : acc
+      ));
+      setEditingAccount(null);
+    }
   };
 
   return (
@@ -163,6 +178,69 @@ export function AccountsSection({ onBack }: AccountsSectionProps) {
         </Card>
       )}
 
+      {/* Edit Account Dialog */}
+      <Dialog open={!!editingAccount} onOpenChange={() => setEditingAccount(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Account</DialogTitle>
+            <DialogDescription>
+              Update account information and settings
+            </DialogDescription>
+          </DialogHeader>
+          {editingAccount && (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="edit-balance">Balance</Label>
+                <Input
+                  id="edit-balance"
+                  type="number"
+                  value={editingAccount.balance}
+                  onChange={(e) => setEditingAccount({
+                    ...editingAccount,
+                    balance: parseFloat(e.target.value)
+                  })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-status">Status</Label>
+                <Select 
+                  value={editingAccount.status} 
+                  onValueChange={(value) => setEditingAccount({
+                    ...editingAccount,
+                    status: value
+                  })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ACTIVE">Active</SelectItem>
+                    <SelectItem value="DEACTIVATED">Deactivated</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-owner">Owner</Label>
+                <Input
+                  id="edit-owner"
+                  value={editingAccount.owner}
+                  onChange={(e) => setEditingAccount({
+                    ...editingAccount,
+                    owner: e.target.value
+                  })}
+                />
+              </div>
+              <div className="flex gap-2 pt-4">
+                <Button onClick={handleSaveEdit}>Save Changes</Button>
+                <Button variant="outline" onClick={() => setEditingAccount(null)}>
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
       {/* Accounts List */}
       <div className="grid gap-4">
         {accounts.map((account) => (
@@ -197,7 +275,11 @@ export function AccountsSection({ onBack }: AccountsSectionProps) {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => handleEditAccount(account)}
+                  >
                     <Edit className="w-4 h-4" />
                   </Button>
                   <Button variant="outline" size="sm">
