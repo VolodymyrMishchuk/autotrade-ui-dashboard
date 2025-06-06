@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { 
   ArrowLeft, 
   Plus, 
@@ -23,9 +24,10 @@ interface SourcesSectionProps {
 export function SourcesSection({ onBack }: SourcesSectionProps) {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [editingSource, setEditingSource] = useState<any>(null);
 
   // Mock data
-  const sources = [
+  const [sources, setSources] = useState([
     {
       id: "1",
       name: "TradingView Alerts",
@@ -50,7 +52,7 @@ export function SourcesSection({ onBack }: SourcesSectionProps) {
       status: "Inactive",
       signals: 0
     },
-  ];
+  ]);
 
   const getPlatformIcon = (platform: string) => {
     switch (platform.toLowerCase()) {
@@ -67,6 +69,25 @@ export function SourcesSection({ onBack }: SourcesSectionProps) {
     return status === "Active" 
       ? "bg-green-100 text-green-800" 
       : "bg-gray-100 text-gray-800";
+  };
+
+  const handleEditSource = (source: any) => {
+    setEditingSource(source);
+  };
+
+  const handleSaveEdit = () => {
+    if (editingSource) {
+      setSources(sources.map(source => 
+        source.id === editingSource.id ? editingSource : source
+      ));
+      setEditingSource(null);
+    }
+  };
+
+  const handleDeleteSource = (sourceId: string) => {
+    if (confirm("Are you sure you want to delete this source?")) {
+      setSources(sources.filter(source => source.id !== sourceId));
+    }
   };
 
   return (
@@ -136,6 +157,65 @@ export function SourcesSection({ onBack }: SourcesSectionProps) {
         </Card>
       )}
 
+      {/* Edit Source Dialog */}
+      <Dialog open={!!editingSource} onOpenChange={() => setEditingSource(null)}>
+        <DialogContent className="w-[95vw] max-w-md mx-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Source</DialogTitle>
+            <DialogDescription>
+              Update source information and settings
+            </DialogDescription>
+          </DialogHeader>
+          {editingSource && (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="edit-name">Source Name</Label>
+                <Input
+                  id="edit-name"
+                  value={editingSource.name}
+                  onChange={(e) => setEditingSource({
+                    ...editingSource,
+                    name: e.target.value
+                  })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-platform">Platform</Label>
+                <Input
+                  id="edit-platform"
+                  value={editingSource.platform}
+                  onChange={(e) => setEditingSource({
+                    ...editingSource,
+                    platform: e.target.value
+                  })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-status">Status</Label>
+                <select 
+                  id="edit-status"
+                  value={editingSource.status}
+                  onChange={(e) => setEditingSource({
+                    ...editingSource,
+                    status: e.target.value
+                  })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                >
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                </select>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-2 pt-4">
+                <Button onClick={handleSaveEdit} className="w-full sm:w-auto">Save Changes</Button>
+                <Button variant="outline" onClick={() => setEditingSource(null)} className="w-full sm:w-auto">
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
       {/* Sources List */}
       <div className="grid gap-3 sm:gap-4">
         {sources.map((source) => {
@@ -164,10 +244,20 @@ export function SourcesSection({ onBack }: SourcesSectionProps) {
                     </div>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => handleEditSource(source)}
+                      className="h-8 w-8 p-0"
+                    >
                       <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
                     </Button>
-                    <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => handleDeleteSource(source.id)}
+                      className="h-8 w-8 p-0"
+                    >
                       <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
                     </Button>
                   </div>

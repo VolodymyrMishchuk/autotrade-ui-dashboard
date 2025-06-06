@@ -10,8 +10,7 @@ import {
   ArrowUpRight,
   ArrowDownLeft,
   DollarSign,
-  Calendar,
-  Filter
+  Calendar
 } from "lucide-react";
 import { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -24,7 +23,7 @@ export function TransactionsSection({ onBack }: TransactionsSectionProps) {
   const [searchTerm, setSearchTerm] = useState("");
 
   // Mock data
-  const transactions = [
+  const [transactions, setTransactions] = useState([
     {
       id: "1",
       amount: 1250.00,
@@ -55,7 +54,7 @@ export function TransactionsSection({ onBack }: TransactionsSectionProps) {
       currency: "USD",
       symbol: "USDJPY"
     },
-  ];
+  ]);
 
   const getDirectionIcon = (direction: string) => {
     return direction === "BUY" ? ArrowUpRight : ArrowDownLeft;
@@ -76,6 +75,12 @@ export function TransactionsSection({ onBack }: TransactionsSectionProps) {
 
   const formatDateTime = (dateString: string) => {
     return new Date(dateString).toLocaleString();
+  };
+
+  const handleDeleteTransaction = (transactionId: string) => {
+    if (confirm("Are you sure you want to delete this transaction?")) {
+      setTransactions(transactions.filter(transaction => transaction.id !== transactionId));
+    }
   };
 
   return (
@@ -217,9 +222,19 @@ export function TransactionsSection({ onBack }: TransactionsSectionProps) {
                       </div>
                     </div>
                   </div>
-                  <div className="text-left sm:text-right flex-shrink-0">
-                    <div className="text-xs sm:text-sm text-muted-foreground">Transaction ID</div>
-                    <div className="font-mono text-xs sm:text-sm">#{transaction.id}</div>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                    <div className="text-left sm:text-right flex-shrink-0">
+                      <div className="text-xs sm:text-sm text-muted-foreground">Transaction ID</div>
+                      <div className="font-mono text-xs sm:text-sm">#{transaction.id}</div>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => handleDeleteTransaction(transaction.id)}
+                      className="h-8 px-2"
+                    >
+                      Delete
+                    </Button>
                   </div>
                 </div>
               </CardContent>

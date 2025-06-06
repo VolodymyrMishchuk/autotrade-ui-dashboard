@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { 
   ArrowLeft, 
   Plus, 
@@ -24,9 +25,10 @@ interface PersonsSectionProps {
 export function PersonsSection({ onBack }: PersonsSectionProps) {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [editingUser, setEditingUser] = useState<any>(null);
 
   // Mock data - in real app this would come from API
-  const users = [
+  const [users, setUsers] = useState([
     {
       id: "1",
       first_name: "John",
@@ -47,7 +49,7 @@ export function PersonsSection({ onBack }: PersonsSectionProps) {
       type: "Individual",
       created_at: "2024-01-10",
     },
-  ];
+  ]);
 
   const filteredUsers = users.filter(user => 
     user.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -63,6 +65,25 @@ export function PersonsSection({ onBack }: PersonsSectionProps) {
         return "bg-blue-100 text-blue-800";
       default:
         return "bg-green-100 text-green-800";
+    }
+  };
+
+  const handleEditUser = (user: any) => {
+    setEditingUser(user);
+  };
+
+  const handleSaveEdit = () => {
+    if (editingUser) {
+      setUsers(users.map(user => 
+        user.id === editingUser.id ? editingUser : user
+      ));
+      setEditingUser(null);
+    }
+  };
+
+  const handleDeleteUser = (userId: string) => {
+    if (confirm("Are you sure you want to delete this user?")) {
+      setUsers(users.filter(user => user.id !== userId));
     }
   };
 
@@ -181,6 +202,80 @@ export function PersonsSection({ onBack }: PersonsSectionProps) {
         </Card>
       )}
 
+      {/* Edit User Dialog */}
+      <Dialog open={!!editingUser} onOpenChange={() => setEditingUser(null)}>
+        <DialogContent className="w-[95vw] max-w-md mx-auto">
+          <DialogHeader>
+            <DialogTitle>Edit User</DialogTitle>
+            <DialogDescription>
+              Update user information and settings
+            </DialogDescription>
+          </DialogHeader>
+          {editingUser && (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="edit-first-name">First Name</Label>
+                <Input
+                  id="edit-first-name"
+                  value={editingUser.first_name}
+                  onChange={(e) => setEditingUser({
+                    ...editingUser,
+                    first_name: e.target.value
+                  })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-last-name">Last Name</Label>
+                <Input
+                  id="edit-last-name"
+                  value={editingUser.last_name}
+                  onChange={(e) => setEditingUser({
+                    ...editingUser,
+                    last_name: e.target.value
+                  })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-email">Email</Label>
+                <Input
+                  id="edit-email"
+                  value={editingUser.email}
+                  onChange={(e) => setEditingUser({
+                    ...editingUser,
+                    email: e.target.value
+                  })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-role">Role</Label>
+                <Select 
+                  value={editingUser.role} 
+                  onValueChange={(value) => setEditingUser({
+                    ...editingUser,
+                    role: value
+                  })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="USER">User</SelectItem>
+                    <SelectItem value="ADMIN">Admin</SelectItem>
+                    <SelectItem value="SUPERADMIN">Super Admin</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-2 pt-4">
+                <Button onClick={handleSaveEdit} className="w-full sm:w-auto">Save Changes</Button>
+                <Button variant="outline" onClick={() => setEditingUser(null)} className="w-full sm:w-auto">
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
       {/* Users List */}
       <div className="grid gap-3 sm:gap-4">
         {filteredUsers.map((user) => (
@@ -214,10 +309,20 @@ export function PersonsSection({ onBack }: PersonsSectionProps) {
                   </div>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => handleEditUser(user)}
+                    className="h-8 w-8 p-0"
+                  >
                     <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
                   </Button>
-                  <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => handleDeleteUser(user.id)}
+                    className="h-8 w-8 p-0"
+                  >
                     <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
                   </Button>
                 </div>
