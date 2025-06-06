@@ -8,11 +8,12 @@ import { AuthSection } from "@/components/AuthSection";
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState("dashboard");
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(true); // Changed to true to hide auth
 
-  if (!isAuthenticated) {
-    return <AuthSection onLogin={() => setIsAuthenticated(true)} />;
-  }
+  // Commented out auth section to hide it
+  // if (!isAuthenticated) {
+  //   return <AuthSection onLogin={() => setIsAuthenticated(true)} />;
+  // }
 
   return (
     <SidebarProvider>
