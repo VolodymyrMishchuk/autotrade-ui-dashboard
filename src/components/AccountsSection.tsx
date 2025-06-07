@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,6 +28,7 @@ export function AccountsSection({ onBack }: AccountsSectionProps) {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [editingAccount, setEditingAccount] = useState<any>(null);
+  const [statusFilter, setStatusFilter] = useState("all");
 
   // Mock data
   const [accounts, setAccounts] = useState([
@@ -35,7 +37,7 @@ export function AccountsSection({ onBack }: AccountsSectionProps) {
       number: 12345678,
       balance: 15750.50,
       currency: "USD",
-      status: "ACTIVE",
+      status: "DEACTIVATED",
       created_at: "2024-01-15",
       person_id: "1",
       source_id: "1",
@@ -55,6 +57,17 @@ export function AccountsSection({ onBack }: AccountsSectionProps) {
       source: "MetaTrader"
     },
   ]);
+
+  // Filter accounts based on search term and status filter
+  const filteredAccounts = accounts.filter(account => {
+    const matchesSearch = account.owner.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         account.number.toString().includes(searchTerm) ||
+                         account.source.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesStatus = statusFilter === "all" || account.status === statusFilter;
+    
+    return matchesSearch && matchesStatus;
+  });
 
   const getStatusColor = (status: string) => {
     return status === "ACTIVE" 
@@ -129,7 +142,7 @@ export function AccountsSection({ onBack }: AccountsSectionProps) {
                 />
               </div>
             </div>
-            <Select defaultValue="all">
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue placeholder="Filter by status" />
               </SelectTrigger>
@@ -256,7 +269,7 @@ export function AccountsSection({ onBack }: AccountsSectionProps) {
 
       {/* Accounts List */}
       <div className="grid gap-3 sm:gap-4">
-        {accounts.map((account) => (
+        {filteredAccounts.map((account) => (
           <Card key={account.id} className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
             <CardContent className="p-4 sm:p-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -331,6 +344,13 @@ export function AccountsSection({ onBack }: AccountsSectionProps) {
             </CardContent>
           </Card>
         ))}
+        {filteredAccounts.length === 0 && (
+          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+            <CardContent className="p-8 text-center">
+              <p className="text-muted-foreground">No accounts found matching your filters.</p>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
