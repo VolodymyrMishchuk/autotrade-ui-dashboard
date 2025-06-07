@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,8 +10,7 @@ import {
   ArrowUpRight,
   ArrowDownLeft,
   DollarSign,
-  Calendar,
-  Trash2
+  Calendar
 } from "lucide-react";
 import { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -227,32 +225,6 @@ export function TransactionsSection({ onBack }: TransactionsSectionProps) {
                       <div className="text-xs sm:text-sm text-muted-foreground">Transaction ID</div>
                       <div className="font-mono text-xs sm:text-sm">#{transaction.id}</div>
                     </div>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          className="h-8 px-2"
-                        >
-                          <Trash2 className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
-                          Delete
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Delete Transaction</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Are you sure you want to delete transaction #{transaction.id}? This action cannot be undone.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDeleteTransaction(transaction.id)}>
-                            Delete
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
                   </div>
                 </div>
               </CardContent>

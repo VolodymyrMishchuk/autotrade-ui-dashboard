@@ -1,10 +1,11 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
+import { Toggle } from "@/components/ui/toggle";
 import { 
   ArrowLeft, 
   Plus, 
@@ -38,6 +39,7 @@ export function PersonsSection({ onBack }: PersonsSectionProps) {
       role: "USER",
       type: "Individual",
       created_at: "2024-01-15",
+      status: "Active"
     },
     {
       id: "2",
@@ -48,6 +50,7 @@ export function PersonsSection({ onBack }: PersonsSectionProps) {
       role: "ADMIN",
       type: "Individual",
       created_at: "2024-01-10",
+      status: "Active"
     },
   ]);
 
@@ -85,6 +88,37 @@ export function PersonsSection({ onBack }: PersonsSectionProps) {
     if (confirm("Are you sure you want to delete this user?")) {
       setUsers(users.filter(user => user.id !== userId));
     }
+  };
+
+  const handleToggleStatus = (userId: string) => {
+    setUsers(users.map(user => 
+      user.id === userId 
+        ? { ...user, status: user.status === "Active" ? "Deactivated" : "Active" }
+        : user
+    ));
+  };
+
+  const handleToggleRole = (userId: string) => {
+    setUsers(users.map(user => {
+      if (user.id === userId) {
+        let newRole;
+        switch (user.role) {
+          case "USER":
+            newRole = "ADMIN";
+            break;
+          case "ADMIN":
+            newRole = "SUPERADMIN";
+            break;
+          case "SUPERADMIN":
+            newRole = "USER";
+            break;
+          default:
+            newRole = "USER";
+        }
+        return { ...user, role: newRole };
+      }
+      return user;
+    }));
   };
 
   return (
@@ -305,26 +339,50 @@ export function PersonsSection({ onBack }: PersonsSectionProps) {
                         {user.role}
                       </Badge>
                       <Badge variant="outline" className="text-xs">{user.type}</Badge>
+                      <Badge className={`${user.status === "Active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"} text-xs`}>
+                        {user.status}
+                      </Badge>
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => handleEditUser(user)}
-                    className="h-8 w-8 p-0"
-                  >
-                    <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => handleDeleteUser(user.id)}
-                    className="h-8 w-8 p-0"
-                  >
-                    <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
-                  </Button>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">Status:</span>
+                      <Switch
+                        checked={user.status === "Active"}
+                        onCheckedChange={() => handleToggleStatus(user.id)}
+                      />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">Role:</span>
+                      <Toggle
+                        pressed={user.role !== "USER"}
+                        onPressedChange={() => handleToggleRole(user.id)}
+                        className="h-6 px-2 text-xs"
+                      >
+                        {user.role}
+                      </Toggle>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => handleEditUser(user)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => handleDeleteUser(user.id)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             </CardContent>

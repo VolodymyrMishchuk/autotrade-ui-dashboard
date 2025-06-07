@@ -1,10 +1,10 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
 import { 
   ArrowLeft, 
   Plus, 
@@ -69,6 +69,14 @@ export function SourcesSection({ onBack }: SourcesSectionProps) {
     return status === "Active" 
       ? "bg-green-100 text-green-800" 
       : "bg-gray-100 text-gray-800";
+  };
+
+  const handleToggleStatus = (sourceId: string) => {
+    setSources(sources.map(source => 
+      source.id === sourceId 
+        ? { ...source, status: source.status === "Active" ? "Inactive" : "Active" }
+        : source
+    ));
   };
 
   const handleEditSource = (source: any) => {
@@ -243,23 +251,32 @@ export function SourcesSection({ onBack }: SourcesSectionProps) {
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => handleEditSource(source)}
-                      className="h-8 w-8 p-0"
-                    >
-                      <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => handleDeleteSource(source.id)}
-                      className="h-8 w-8 p-0"
-                    >
-                      <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
-                    </Button>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">Status:</span>
+                      <Switch
+                        checked={source.status === "Active"}
+                        onCheckedChange={() => handleToggleStatus(source.id)}
+                      />
+                    </div>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => handleEditSource(source)}
+                        className="h-8 w-8 p-0"
+                      >
+                        <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => handleDeleteSource(source.id)}
+                        className="h-8 w-8 p-0"
+                      >
+                        <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </CardContent>

@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Switch } from "@/components/ui/switch";
 import { 
   ArrowLeft, 
   Plus, 
@@ -67,6 +67,14 @@ export function AccountsSection({ onBack }: AccountsSectionProps) {
       style: 'currency',
       currency: currency,
     }).format(amount);
+  };
+
+  const handleToggleStatus = (accountId: string) => {
+    setAccounts(accounts.map(account => 
+      account.id === accountId 
+        ? { ...account, status: account.status === "ACTIVE" ? "DEACTIVATED" : "ACTIVE" }
+        : account
+    ));
   };
 
   const handleEditAccount = (account: any) => {
@@ -279,36 +287,45 @@ export function AccountsSection({ onBack }: AccountsSectionProps) {
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => handleEditAccount(account)}
-                    className="h-8 w-8 p-0"
-                  >
-                    <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
-                  </Button>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="outline" size="sm" className="h-8 w-8 p-0">
-                        <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Delete Account</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Are you sure you want to delete Account #{account.number}? This action cannot be undone.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleDeleteAccount(account.id)}>
-                          Delete
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground">Status:</span>
+                    <Switch
+                      checked={account.status === "ACTIVE"}
+                      onCheckedChange={() => handleToggleStatus(account.id)}
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => handleEditAccount(account)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                          <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Account</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to delete Account #{account.number}? This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleDeleteAccount(account.id)}>
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
                 </div>
               </div>
             </CardContent>
