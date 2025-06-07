@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { 
   ArrowLeft, 
   Plus, 
@@ -10,7 +11,8 @@ import {
   ArrowUpRight,
   ArrowDownLeft,
   DollarSign,
-  Calendar
+  Calendar,
+  Trash2
 } from "lucide-react";
 import { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -78,9 +80,7 @@ export function TransactionsSection({ onBack }: TransactionsSectionProps) {
   };
 
   const handleDeleteTransaction = (transactionId: string) => {
-    if (confirm("Are you sure you want to delete this transaction?")) {
-      setTransactions(transactions.filter(transaction => transaction.id !== transactionId));
-    }
+    setTransactions(transactions.filter(transaction => transaction.id !== transactionId));
   };
 
   return (
@@ -227,14 +227,32 @@ export function TransactionsSection({ onBack }: TransactionsSectionProps) {
                       <div className="text-xs sm:text-sm text-muted-foreground">Transaction ID</div>
                       <div className="font-mono text-xs sm:text-sm">#{transaction.id}</div>
                     </div>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => handleDeleteTransaction(transaction.id)}
-                      className="h-8 px-2"
-                    >
-                      Delete
-                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="h-8 px-2"
+                        >
+                          <Trash2 className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                          Delete
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Transaction</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to delete transaction #{transaction.id}? This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleDeleteTransaction(transaction.id)}>
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 </div>
               </CardContent>
