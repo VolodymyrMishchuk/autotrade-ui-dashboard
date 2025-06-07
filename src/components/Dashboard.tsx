@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -30,6 +29,7 @@ export function Dashboard({ activeSection, onSectionChange }: DashboardProps) {
       icon: Users,
       change: "+12%",
       changeType: "positive" as const,
+      section: "persons",
     },
     {
       title: "Active Accounts",
@@ -37,6 +37,7 @@ export function Dashboard({ activeSection, onSectionChange }: DashboardProps) {
       icon: CreditCard,
       change: "+8%",
       changeType: "positive" as const,
+      section: "accounts",
     },
     {
       title: "Signal Sources",
@@ -44,6 +45,7 @@ export function Dashboard({ activeSection, onSectionChange }: DashboardProps) {
       icon: Radio,
       change: "+2",
       changeType: "positive" as const,
+      section: "sources",
     },
     {
       title: "Total Volume",
@@ -51,6 +53,7 @@ export function Dashboard({ activeSection, onSectionChange }: DashboardProps) {
       icon: DollarSign,
       change: "+18%",
       changeType: "positive" as const,
+      section: "transactions",
     },
   ];
 
@@ -106,15 +109,19 @@ export function Dashboard({ activeSection, onSectionChange }: DashboardProps) {
       {/* Overview Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-6">
         {stats.map((stat, index) => (
-          <Card key={index} className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+          <Card 
+            key={index} 
+            className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group"
+            onClick={() => onSectionChange(stat.section)}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 p-2 sm:p-3 lg:p-6">
-              <CardTitle className="text-xs sm:text-sm lg:text-sm font-medium text-muted-foreground">
+              <CardTitle className="text-xs sm:text-sm lg:text-sm font-medium text-muted-foreground group-hover:text-primary transition-colors">
                 {stat.title}
               </CardTitle>
-              <stat.icon className="h-3 w-3 sm:h-4 sm:w-4 lg:h-4 lg:w-4 text-muted-foreground" />
+              <stat.icon className="h-3 w-3 sm:h-4 sm:w-4 lg:h-4 lg:w-4 text-muted-foreground group-hover:text-primary transition-colors" />
             </CardHeader>
             <CardContent className="p-2 sm:p-3 lg:p-6 pt-0">
-              <div className="text-sm sm:text-lg lg:text-2xl font-bold">{stat.value}</div>
+              <div className="text-sm sm:text-lg lg:text-2xl font-bold group-hover:text-primary transition-colors">{stat.value}</div>
               <Badge variant="secondary" className="mt-1 lg:mt-2 text-xs">
                 <TrendingUp className="w-2 h-2 lg:w-3 lg:h-3 mr-1" />
                 {stat.change}
