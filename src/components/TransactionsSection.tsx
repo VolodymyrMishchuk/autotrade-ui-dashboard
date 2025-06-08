@@ -1,9 +1,9 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { 
   ArrowLeft, 
   Plus, 
@@ -24,6 +24,17 @@ export function TransactionsSection({ onBack }: TransactionsSectionProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [directionFilter, setDirectionFilter] = useState("all");
   const [timeRangeFilter, setTimeRangeFilter] = useState("all");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  
+  // Form states for manual transaction
+  const [formData, setFormData] = useState({
+    amount: "",
+    direction: "",
+    symbol: "",
+    accountId: "",
+    sourceId: "",
+    currency: "USD"
+  });
 
   // Mock data
   const [transactions, setTransactions] = useState([
@@ -112,6 +123,35 @@ export function TransactionsSection({ onBack }: TransactionsSectionProps) {
     return new Date(dateString).toLocaleString();
   };
 
+  // Handle manual transaction submission
+  const handleSubmitTransaction = () => {
+    if (!formData.amount || !formData.direction || !formData.symbol || !formData.accountId || !formData.sourceId) {
+      return;
+    }
+
+    const newTransaction = {
+      id: (transactions.length + 1).toString(),
+      amount: parseFloat(formData.amount),
+      direction: formData.direction,
+      created_at: new Date().toISOString(),
+      account_id: formData.accountId,
+      source_id: formData.sourceId,
+      currency: formData.currency,
+      symbol: formData.symbol.toUpperCase()
+    };
+
+    setTransactions([newTransaction, ...transactions]);
+    setIsDialogOpen(false);
+    setFormData({
+      amount: "",
+      direction: "",
+      symbol: "",
+      accountId: "",
+      sourceId: "",
+      currency: "USD"
+    });
+  };
+
   // Calculate summary stats from filtered transactions
   const totalVolume = filteredTransactions.reduce((sum, t) => sum + t.amount, 0);
   const buyOrders = filteredTransactions.filter(t => t.direction === "BUY").length;
@@ -131,10 +171,112 @@ export function TransactionsSection({ onBack }: TransactionsSectionProps) {
             <p className="text-sm sm:text-base text-muted-foreground">Monitor and manage trading transactions</p>
           </div>
         </div>
-        <Button className="w-full sm:w-auto">
-          <Plus className="w-4 h-4 mr-2" />
-          Manual Transaction
-        </Button>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="w-full sm:w-auto">
+              <Plus className="w-4 h-4 mr-2" />
+              Manual Transaction
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Add Manual Transaction</DialogTitle>
+              <DialogDescription>
+                Enter the details for a new trading transaction.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="amount" className="text-right">
+                  Amount
+                </Label>
+                <Input
+                  id="amount"
+                  type="number"
+                  step="0.01"
+                  value={formData.amount}
+                  onChange={(e) => setFormData({...formData, amount: e.target.value})}
+                  className="col-span-3"
+                  placeholder="1000.00"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="direction" className="text-right">
+                  Direction
+                </Label>
+                <Select value={formData.direction} onValueChange={(value) => setFormData({...formData, direction: value})}>
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder="Select direction" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="BUY">Buy</SelectItem>
+                    <SelectItem value="SELL">Sell</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="symbol" className="text-right">
+                  Symbol
+                </Label>
+                <Input
+                  id="symbol"
+                  value={formData.symbol}
+                  onChange={(e) => setFormData({...formData, symbol: e.target.value})}
+                  className="col-span-3"
+                  placeholder="EURUSD"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="accountId" className="text-right">
+                  Account ID
+                </Label>
+                <Input
+                  id="accountId"
+                  value={formData.accountId}
+                  onChange={(e) => setFormData({...formData, accountId: e.target.value})}
+                  className="col-span-3"
+                  placeholder="12345678"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="sourceId" className="text-right">
+                  Source
+                </Label>
+                <Input
+                  id="sourceId"
+                  value={formData.sourceId}
+                  onChange={(e) => setFormData({...formData, sourceId: e.target.value})}
+                  className="col-span-3"
+                  placeholder="TradingView"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="currency" className="text-right">
+                  Currency
+                </Label>
+                <Select value={formData.currency} onValueChange={(value) => setFormData({...formData, currency: value})}>
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="USD">USD</SelectItem>
+                    <SelectItem value="EUR">EUR</SelectItem>
+                    <SelectItem value="GBP">GBP</SelectItem>
+                    <SelectItem value="JPY">JPY</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleSubmitTransaction}>
+                Add Transaction
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Search and Filters */}
