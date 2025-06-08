@@ -27,6 +27,7 @@ export function PersonsSection({ onBack }: PersonsSectionProps) {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [editingUser, setEditingUser] = useState<any>(null);
+  const [roleFilter, setRoleFilter] = useState("all");
 
   // Mock data - in real app this would come from API
   const [users, setUsers] = useState([
@@ -54,11 +55,15 @@ export function PersonsSection({ onBack }: PersonsSectionProps) {
     },
   ]);
 
-  const filteredUsers = users.filter(user => 
-    user.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.last_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredUsers = users.filter(user => {
+    const matchesSearch = user.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.last_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesRole = roleFilter === "all" || user.role === roleFilter;
+    
+    return matchesSearch && matchesRole;
+  });
 
   const getRoleColor = (role: string) => {
     switch (role) {
@@ -156,7 +161,7 @@ export function PersonsSection({ onBack }: PersonsSectionProps) {
                 />
               </div>
             </div>
-            <Select defaultValue="all">
+            <Select value={roleFilter} onValueChange={setRoleFilter}>
               <SelectTrigger className="w-full md:w-[180px]">
                 <SelectValue placeholder="Filter by role" />
               </SelectTrigger>
@@ -312,6 +317,13 @@ export function PersonsSection({ onBack }: PersonsSectionProps) {
 
       {/* Users List */}
       <div className="grid gap-3 sm:gap-4">
+        {filteredUsers.length === 0 && (
+          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+            <CardContent className="p-8 text-center">
+              <p className="text-muted-foreground">No users found matching your criteria.</p>
+            </CardContent>
+          </Card>
+        )}
         {filteredUsers.map((user) => (
           <Card key={user.id} className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
             <CardContent className="p-4 sm:p-6">
