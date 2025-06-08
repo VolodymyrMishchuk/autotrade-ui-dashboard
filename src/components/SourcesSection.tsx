@@ -26,39 +26,41 @@ export function SourcesSection({ onBack }: SourcesSectionProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [editingSource, setEditingSource] = useState<any>(null);
 
-  // Mock data
+  // Mock data with secret symbols
   const [sources, setSources] = useState([
     {
       id: "1",
-      name: "TradingView Alerts",
-      platform: "TradingView",
+      name: "••••••••• ••••••",
+      platform: "•••••••••",
       created_at: "2024-01-15",
       status: "Active",
-      signals: 1250
+      signals: "•,•••"
     },
     {
       id: "2",
-      name: "MetaTrader Expert Advisor",
-      platform: "MetaTrader 5",
+      name: "•••••••••• ••••••• •••••••",
+      platform: "•••••••••• •",
       created_at: "2024-01-10",
       status: "Active",
-      signals: 890
+      signals: "•••"
     },
     {
       id: "3",
-      name: "Custom API Source",
-      platform: "REST API",
+      name: "••••••• ••• ••••••",
+      platform: "•••• •••",
       created_at: "2024-01-08",
       status: "Inactive",
-      signals: 0
+      signals: "•"
     },
   ]);
 
   const getPlatformIcon = (platform: string) => {
     switch (platform.toLowerCase()) {
       case "tradingview":
+      case "•••••••••":
         return Radio;
       case "metatrader 5":
+      case "•••••••••• •":
         return Activity;
       default:
         return Wifi;
@@ -144,15 +146,15 @@ export function SourcesSection({ onBack }: SourcesSectionProps) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Source Name</Label>
-                <Input id="name" placeholder="Enter source name" />
+                <Input id="name" placeholder="••••• ••••••• ••••" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="platform">Platform</Label>
-                <Input id="platform" placeholder="Enter platform name" />
+                <Input id="platform" placeholder="••••• •••••••• ••••" />
               </div>
               <div className="space-y-2 sm:col-span-2">
                 <Label htmlFor="token">API Token</Label>
-                <Input id="token" type="password" placeholder="Enter API token" />
+                <Input id="token" type="password" placeholder="••••• ••• •••••" />
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 pt-4">

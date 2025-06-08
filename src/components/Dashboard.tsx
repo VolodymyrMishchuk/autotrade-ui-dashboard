@@ -2,19 +2,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { 
-  Users, 
-  CreditCard, 
-  Radio, 
-  ArrowLeftRight,
-  TrendingUp,
-  DollarSign,
+  TrendingUp, 
+  TrendingDown, 
+  DollarSign, 
   Activity,
-  Plus
+  Users,
+  CreditCard,
+  ArrowUpRight,
+  ArrowDownRight
 } from "lucide-react";
-import { PersonsSection } from "@/components/PersonsSection";
-import { AccountsSection } from "@/components/AccountsSection";
-import { SourcesSection } from "@/components/SourcesSection";
-import { TransactionsSection } from "@/components/TransactionsSection";
 
 interface DashboardProps {
   activeSection: string;
@@ -22,184 +18,269 @@ interface DashboardProps {
 }
 
 export function Dashboard({ activeSection, onSectionChange }: DashboardProps) {
+  // Mock data with secret symbols
   const stats = [
     {
-      title: "Total Users",
-      value: "1,234",
-      icon: Users,
-      change: "+12%",
-      changeType: "positive" as const,
-      section: "persons",
-    },
-    {
-      title: "Active Accounts",
-      value: "892",
-      icon: CreditCard,
-      change: "+8%",
-      changeType: "positive" as const,
-      section: "accounts",
-    },
-    {
-      title: "Signal Sources",
-      value: "24",
-      icon: Radio,
-      change: "+2",
-      changeType: "positive" as const,
-      section: "sources",
-    },
-    {
-      title: "Total Volume",
-      value: "$2.4M",
+      title: "Total Balance",
+      value: "$••,•••.••",
+      change: "+••.•%",
+      trend: "up" as const,
       icon: DollarSign,
-      change: "+18%",
-      changeType: "positive" as const,
-      section: "transactions",
     },
-  ];
-
-  const quickActions = [
     {
-      title: "Create User",
-      description: "Add a new user to the system",
+      title: "Active Signals",
+      value: "••",
+      change: "+•",
+      trend: "up" as const,
+      icon: Activity,
+    },
+    {
+      title: "Users",
+      value: "•••",
+      change: "+••",
+      trend: "up" as const,
       icon: Users,
-      action: () => onSectionChange("persons"),
-      color: "bg-blue-500",
     },
     {
-      title: "Add Account",
-      description: "Create a new trading account",
+      title: "Transactions",
+      value: "•,•••",
+      change: "+•••",
+      trend: "up" as const,
       icon: CreditCard,
-      action: () => onSectionChange("accounts"),
-      color: "bg-green-500",
-    },
-    {
-      title: "Add Source",
-      description: "Register a new signal source",
-      icon: Radio,
-      action: () => onSectionChange("sources"),
-      color: "bg-purple-500",
-    },
-    {
-      title: "View Transactions",
-      description: "Monitor recent transactions",
-      icon: ArrowLeftRight,
-      action: () => onSectionChange("transactions"),
-      color: "bg-orange-500",
     },
   ];
 
-  if (activeSection === "persons") {
-    return <PersonsSection onBack={() => onSectionChange("dashboard")} />;
-  }
+  const recentTransactions = [
+    {
+      id: 1,
+      type: "Signal",
+      symbol: "•••/•••",
+      amount: "$•••.••",
+      status: "Completed",
+      time: "• min ago"
+    },
+    {
+      id: 2,
+      type: "Manual",
+      symbol: "•••/•••", 
+      amount: "$•,•••.••",
+      status: "Pending",
+      time: "•• min ago"
+    },
+    {
+      id: 3,
+      type: "Signal",
+      symbol: "•••/•••",
+      amount: "$•••.••",
+      status: "Completed", 
+      time: "•• min ago"
+    },
+  ];
 
-  if (activeSection === "accounts") {
-    return <AccountsSection onBack={() => onSectionChange("dashboard")} />;
-  }
+  const activeSignals = [
+    {
+      id: 1,
+      pair: "•••/•••",
+      direction: "BUY",
+      entry: "•.•••••",
+      current: "•.•••••",
+      pnl: "+•••.••",
+      status: "Active"
+    },
+    {
+      id: 2,
+      pair: "•••/•••", 
+      direction: "SELL",
+      entry: "••,•••.••",
+      current: "••,•••.••",
+      pnl: "-•••.••",
+      status: "Active"
+    },
+  ];
 
-  if (activeSection === "sources") {
-    return <SourcesSection onBack={() => onSectionChange("dashboard")} />;
-  }
-
-  if (activeSection === "transactions") {
-    return <TransactionsSection onBack={() => onSectionChange("dashboard")} />;
+  if (activeSection !== "dashboard") {
+    return null;
   }
 
   return (
-    <div className="space-y-3 sm:space-y-4 lg:space-y-6">
-      {/* Overview Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-6">
-        {stats.map((stat, index) => (
-          <Card 
-            key={index} 
-            className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group"
-            onClick={() => onSectionChange(stat.section)}
-          >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 p-2 sm:p-3 lg:p-6">
-              <CardTitle className="text-xs sm:text-sm lg:text-sm font-medium text-muted-foreground group-hover:text-primary transition-colors">
-                {stat.title}
-              </CardTitle>
-              <stat.icon className="h-3 w-3 sm:h-4 sm:w-4 lg:h-4 lg:w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-            </CardHeader>
-            <CardContent className="p-2 sm:p-3 lg:p-6 pt-0">
-              <div className="text-sm sm:text-lg lg:text-2xl font-bold group-hover:text-primary transition-colors">{stat.value}</div>
-              <Badge variant="secondary" className="mt-1 lg:mt-2 text-xs">
-                <TrendingUp className="w-2 h-2 lg:w-3 lg:h-3 mr-1" />
-                {stat.change}
-              </Badge>
-            </CardContent>
-          </Card>
-        ))}
+    <div className="space-y-4 sm:space-y-6">
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
+        {stats.map((stat) => {
+          const IconComponent = stat.icon;
+          return (
+            <Card key={stat.title} className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs sm:text-sm font-medium text-muted-foreground uppercase tracking-wide">
+                      {stat.title}
+                    </p>
+                    <p className="text-xl sm:text-2xl lg:text-3xl font-bold mt-1 sm:mt-2">
+                      {stat.value}
+                    </p>
+                    <div className="flex items-center mt-1 sm:mt-2">
+                      {stat.trend === "up" ? (
+                        <ArrowUpRight className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 mr-1" />
+                      ) : (
+                        <ArrowDownRight className="w-3 h-3 sm:w-4 sm:h-4 text-red-500 mr-1" />
+                      )}
+                      <span className={`text-xs sm:text-sm font-medium ${
+                        stat.trend === "up" ? "text-green-600" : "text-red-600"
+                      }`}>
+                        {stat.change}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+                    <IconComponent className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+
+      {/* Charts and Recent Activity Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+        {/* Active Signals */}
+        <Card className="lg:col-span-2 bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+          <CardHeader className="p-4 sm:p-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <CardTitle className="text-lg sm:text-xl">Active Signals</CardTitle>
+                <CardDescription className="text-sm sm:text-base">Current trading positions</CardDescription>
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => onSectionChange("sources")}
+                className="w-full sm:w-auto"
+              >
+                View Sources
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="p-4 sm:p-6 pt-0">
+            <div className="space-y-3 sm:space-y-4">
+              {activeSignals.map((signal) => (
+                <div key={signal.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 bg-muted/50 rounded-lg gap-2 sm:gap-4">
+                  <div className="flex flex-col xs:flex-row xs:items-center gap-2 xs:gap-4 min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <Badge 
+                        variant={signal.direction === "BUY" ? "default" : "secondary"}
+                        className="text-xs font-medium"
+                      >
+                        {signal.direction}
+                      </Badge>
+                      <span className="font-semibold text-sm sm:text-base">{signal.pair}</span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2 xs:gap-4 text-xs sm:text-sm text-muted-foreground">
+                      <span>Entry: {signal.entry}</span>
+                      <span>Current: {signal.current}</span>
+                    </div>
+                  </div>
+                  <div className="flex flex-col xs:flex-row xs:items-center gap-2 xs:gap-4">
+                    <span className={`text-sm font-medium ${
+                      signal.pnl.startsWith("+") ? "text-green-600" : "text-red-600"
+                    }`}>
+                      {signal.pnl}
+                    </span>
+                    <Badge variant="outline" className="text-xs w-fit">
+                      {signal.status}
+                    </Badge>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Recent Transactions */}
+        <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+          <CardHeader className="p-4 sm:p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-lg sm:text-xl">Recent Activity</CardTitle>
+                <CardDescription className="text-sm sm:text-base">Latest transactions</CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="p-4 sm:p-6 pt-0">
+            <div className="space-y-3 sm:space-y-4">
+              {recentTransactions.map((transaction) => (
+                <div key={transaction.id} className="flex items-center justify-between p-3 sm:p-4 bg-muted/50 rounded-lg">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Badge 
+                        variant={transaction.type === "Signal" ? "default" : "secondary"}
+                        className="text-xs"
+                      >
+                        {transaction.type}
+                      </Badge>
+                      <span className="font-medium text-sm truncate">{transaction.symbol}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs sm:text-sm font-medium">{transaction.amount}</span>
+                      <span className="text-xs text-muted-foreground">{transaction.time}</span>
+                    </div>
+                    <Badge 
+                      variant={transaction.status === "Completed" ? "outline" : "secondary"}
+                      className="text-xs mt-1"
+                    >
+                      {transaction.status}
+                    </Badge>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <Button 
+              variant="outline" 
+              className="w-full mt-4"
+              onClick={() => onSectionChange("transactions")}
+            >
+              View All Transactions
+            </Button>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Quick Actions */}
-      <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-        <CardHeader className="p-3 sm:p-4 lg:p-6">
-          <CardTitle className="flex items-center gap-2 text-base sm:text-lg lg:text-xl">
-            <Activity className="w-4 h-4 lg:w-5 lg:h-5" />
-            Quick Actions
-          </CardTitle>
-          <CardDescription className="text-xs sm:text-sm lg:text-base">
-            Common tasks and operations
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="p-3 sm:p-4 lg:p-6 pt-0">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-4">
-            {quickActions.map((action, index) => (
-              <Button
-                key={index}
-                variant="outline"
-                className="h-auto p-2 sm:p-3 lg:p-4 flex flex-col items-center gap-1 sm:gap-2 lg:gap-3 hover:shadow-md transition-all duration-300"
-                onClick={action.action}
-              >
-                <div className={`w-6 h-6 sm:w-8 sm:h-8 lg:w-12 lg:h-12 rounded-lg ${action.color} flex items-center justify-center`}>
-                  <action.icon className="w-3 h-3 sm:w-4 sm:h-4 lg:w-6 lg:h-6 text-white" />
-                </div>
-                <div className="text-center">
-                  <div className="font-semibold text-xs sm:text-sm lg:text-sm">{action.title}</div>
-                  <div className="text-xs text-muted-foreground hidden lg:block">{action.description}</div>
-                </div>
-              </Button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Recent Activity */}
-      <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-        <CardHeader className="p-3 sm:p-4 lg:p-6">
-          <CardTitle className="flex items-center gap-2 text-base sm:text-lg lg:text-xl">
-            <ArrowLeftRight className="w-4 h-4 lg:w-5 lg:h-5" />
-            Recent Activity
-          </CardTitle>
-          <CardDescription className="text-xs sm:text-sm lg:text-base">
-            Latest system events and transactions
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="p-3 sm:p-4 lg:p-6 pt-0">
-          <div className="space-y-2 sm:space-y-3 lg:space-y-4">
-            {[
-              { type: "User Created", user: "john.doe@example.com", time: "2 minutes ago", status: "success" },
-              { type: "Account Activated", user: "Trading Account #1234", time: "5 minutes ago", status: "success" },
-              { type: "Signal Received", user: "TradingView Source", time: "8 minutes ago", status: "info" },
-              { type: "Transaction Executed", user: "$1,250.00 BUY EURUSD", time: "12 minutes ago", status: "success" },
-            ].map((activity, index) => (
-              <div key={index} className="flex items-center justify-between p-2 lg:p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
-                <div className="flex items-center gap-2 lg:gap-3 min-w-0 flex-1">
-                  <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                    activity.status === 'success' ? 'bg-green-500' : 
-                    activity.status === 'info' ? 'bg-blue-500' : 'bg-yellow-500'
-                  }`} />
-                  <div className="min-w-0 flex-1">
-                    <div className="font-medium text-xs sm:text-sm">{activity.type}</div>
-                    <div className="text-xs text-muted-foreground truncate">{activity.user}</div>
-                  </div>
-                </div>
-                <div className="text-xs text-muted-foreground flex-shrink-0 ml-2">{activity.time}</div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+        <Button 
+          variant="outline" 
+          className="h-20 sm:h-24 flex flex-col items-center justify-center gap-2 bg-white/80 backdrop-blur-sm hover:bg-white"
+          onClick={() => onSectionChange("sources")}
+        >
+          <Activity className="w-5 h-5 sm:w-6 sm:h-6" />
+          <span className="text-xs sm:text-sm font-medium">Sources</span>
+        </Button>
+        <Button 
+          variant="outline" 
+          className="h-20 sm:h-24 flex flex-col items-center justify-center gap-2 bg-white/80 backdrop-blur-sm hover:bg-white"
+          onClick={() => onSectionChange("accounts")}
+        >
+          <CreditCard className="w-5 h-5 sm:w-6 sm:h-6" />
+          <span className="text-xs sm:text-sm font-medium">Accounts</span>
+        </Button>
+        <Button 
+          variant="outline" 
+          className="h-20 sm:h-24 flex flex-col items-center justify-center gap-2 bg-white/80 backdrop-blur-sm hover:bg-white"
+          onClick={() => onSectionChange("users")}
+        >
+          <Users className="w-5 h-5 sm:w-6 sm:h-6" />
+          <span className="text-xs sm:text-sm font-medium">Users</span>
+        </Button>
+        <Button 
+          variant="outline" 
+          className="h-20 sm:h-24 flex flex-col items-center justify-center gap-2 bg-white/80 backdrop-blur-sm hover:bg-white"
+          onClick={() => onSectionChange("transactions")}
+        >
+          <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6" />
+          <span className="text-xs sm:text-sm font-medium">Transactions</span>
+        </Button>
+      </div>
     </div>
   );
 }
