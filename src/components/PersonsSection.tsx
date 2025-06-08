@@ -28,6 +28,8 @@ export function PersonsSection({ onBack }: PersonsSectionProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [editingUser, setEditingUser] = useState<any>(null);
   const [roleFilter, setRoleFilter] = useState("all");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   // Mock data - in real app this would come from API
   const [users, setUsers] = useState([
@@ -124,6 +126,28 @@ export function PersonsSection({ onBack }: PersonsSectionProps) {
       }
       return user;
     }));
+  };
+
+  const handleCreateUser = () => {
+    if (password !== confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+    if (password.length < 6) {
+      alert("Password must be at least 6 characters long!");
+      return;
+    }
+    
+    // Here you would normally create the user
+    alert("User created successfully!");
+    setShowCreateForm(false);
+    setPassword("");
+    setConfirmPassword("");
+  };
+
+  const getPasswordMatchStatus = () => {
+    if (!password || !confirmPassword) return null;
+    return password === confirmPassword;
   };
 
   return (
@@ -226,14 +250,56 @@ export function PersonsSection({ onBack }: PersonsSectionProps) {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2 sm:col-span-2">
+              <div className="space-y-2">
                 <Label htmlFor="password" className="text-sm">Password</Label>
-                <Input id="password" type="password" placeholder="Enter password" className="text-sm" />
+                <Input 
+                  id="password" 
+                  type="password" 
+                  placeholder="Enter password" 
+                  className="text-sm" 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                {password && password.length < 6 && (
+                  <p className="text-xs text-red-500">Password must be at least 6 characters</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="confirm_password" className="text-sm">Confirm Password</Label>
+                <Input 
+                  id="confirm_password" 
+                  type="password" 
+                  placeholder="Confirm password" 
+                  className="text-sm" 
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+                {confirmPassword && getPasswordMatchStatus() === false && (
+                  <p className="text-xs text-red-500">Passwords do not match</p>
+                )}
+                {confirmPassword && getPasswordMatchStatus() === true && (
+                  <p className="text-xs text-green-500">Passwords match</p>
+                )}
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 pt-4">
-              <Button type="submit" className="w-full sm:w-auto">Create User</Button>
-              <Button variant="outline" onClick={() => setShowCreateForm(false)} className="w-full sm:w-auto">
+              <Button 
+                type="submit" 
+                className="w-full sm:w-auto"
+                onClick={handleCreateUser}
+                disabled={!password || !confirmPassword || password !== confirmPassword || password.length < 6}
+              >
+                Create User
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setShowCreateForm(false);
+                  setPassword("");
+                  setConfirmPassword("");
+                }} 
+                className="w-full sm:w-auto"
+              >
                 Cancel
               </Button>
             </div>
