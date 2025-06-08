@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +22,8 @@ interface TransactionsSectionProps {
 
 export function TransactionsSection({ onBack }: TransactionsSectionProps) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [directionFilter, setDirectionFilter] = useState("all");
+  const [timeRangeFilter, setTimeRangeFilter] = useState("all");
 
   // Mock data
   const [transactions, setTransactions] = useState([
@@ -56,6 +59,38 @@ export function TransactionsSection({ onBack }: TransactionsSectionProps) {
     },
   ]);
 
+  // Filter transactions based on search term, direction, and time range
+  const filteredTransactions = transactions.filter(transaction => {
+    const matchesSearch = transaction.symbol.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         transaction.account_id.includes(searchTerm) ||
+                         transaction.source_id.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesDirection = directionFilter === "all" || transaction.direction === directionFilter;
+    
+    // Simple time range filtering (you can expand this logic)
+    let matchesTimeRange = true;
+    if (timeRangeFilter !== "all") {
+      const transactionDate = new Date(transaction.created_at);
+      const now = new Date();
+      
+      switch (timeRangeFilter) {
+        case "today":
+          matchesTimeRange = transactionDate.toDateString() === now.toDateString();
+          break;
+        case "week":
+          const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+          matchesTimeRange = transactionDate >= weekAgo;
+          break;
+        case "month":
+          const monthAgo = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+          matchesTimeRange = transactionDate >= monthAgo;
+          break;
+      }
+    }
+    
+    return matchesSearch && matchesDirection && matchesTimeRange;
+  });
+
   const getDirectionIcon = (direction: string) => {
     return direction === "BUY" ? ArrowUpRight : ArrowDownLeft;
   };
@@ -77,9 +112,10 @@ export function TransactionsSection({ onBack }: TransactionsSectionProps) {
     return new Date(dateString).toLocaleString();
   };
 
-  const handleDeleteTransaction = (transactionId: string) => {
-    setTransactions(transactions.filter(transaction => transaction.id !== transactionId));
-  };
+  // Calculate summary stats from filtered transactions
+  const totalVolume = filteredTransactions.reduce((sum, t) => sum + t.amount, 0);
+  const buyOrders = filteredTransactions.filter(t => t.direction === "BUY").length;
+  const sellOrders = filteredTransactions.filter(t => t.direction === "SELL").length;
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -117,7 +153,7 @@ export function TransactionsSection({ onBack }: TransactionsSectionProps) {
               </div>
             </div>
             <div className="flex flex-col xs:flex-row gap-2 xs:gap-3">
-              <Select defaultValue="all">
+              <Select value={directionFilter} onValueChange={setDirectionFilter}>
                 <SelectTrigger className="w-full xs:w-[140px] sm:w-[160px]">
                   <SelectValue placeholder="Direction" />
                 </SelectTrigger>
@@ -127,7 +163,7 @@ export function TransactionsSection({ onBack }: TransactionsSectionProps) {
                   <SelectItem value="SELL">Sell Orders</SelectItem>
                 </SelectContent>
               </Select>
-              <Select defaultValue="all">
+              <Select value={timeRangeFilter} onValueChange={setTimeRangeFilter}>
                 <SelectTrigger className="w-full xs:w-[140px] sm:w-[160px]">
                   <SelectValue placeholder="Time Range" />
                 </SelectTrigger>
@@ -150,7 +186,7 @@ export function TransactionsSection({ onBack }: TransactionsSectionProps) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs sm:text-sm text-muted-foreground">Total Volume</p>
-                <p className="text-lg sm:text-2xl font-bold">$4,151.25</p>
+                <p className="text-lg sm:text-2xl font-bold">${totalVolume.toLocaleString()}</p>
               </div>
               <DollarSign className="w-6 h-6 sm:w-8 sm:h-8 text-blue-500" />
             </div>
@@ -161,7 +197,7 @@ export function TransactionsSection({ onBack }: TransactionsSectionProps) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs sm:text-sm text-muted-foreground">Buy Orders</p>
-                <p className="text-lg sm:text-2xl font-bold text-green-600">2</p>
+                <p className="text-lg sm:text-2xl font-bold text-green-600">{buyOrders}</p>
               </div>
               <ArrowUpRight className="w-6 h-6 sm:w-8 sm:h-8 text-green-500" />
             </div>
@@ -172,7 +208,7 @@ export function TransactionsSection({ onBack }: TransactionsSectionProps) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs sm:text-sm text-muted-foreground">Sell Orders</p>
-                <p className="text-lg sm:text-2xl font-bold text-red-600">1</p>
+                <p className="text-lg sm:text-2xl font-bold text-red-600">{sellOrders}</p>
               </div>
               <ArrowDownLeft className="w-6 h-6 sm:w-8 sm:h-8 text-red-500" />
             </div>
@@ -182,7 +218,7 @@ export function TransactionsSection({ onBack }: TransactionsSectionProps) {
 
       {/* Transactions List */}
       <div className="grid gap-3 sm:gap-4">
-        {transactions.map((transaction) => {
+        {filteredTransactions.map((transaction) => {
           const DirectionIcon = getDirectionIcon(transaction.direction);
           return (
             <Card key={transaction.id} className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
@@ -231,6 +267,13 @@ export function TransactionsSection({ onBack }: TransactionsSectionProps) {
             </Card>
           );
         })}
+        {filteredTransactions.length === 0 && (
+          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+            <CardContent className="p-8 text-center">
+              <p className="text-muted-foreground">No transactions found matching your filters.</p>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
