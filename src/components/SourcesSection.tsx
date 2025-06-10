@@ -59,10 +59,8 @@ export function SourcesSection({ onBack }: SourcesSectionProps) {
   const getPlatformIcon = (platform: string) => {
     switch (platform.toLowerCase()) {
       case "tradingview":
-      case "•••••••••":
         return Radio;
       case "metatrader 5":
-      case "•••••••••• •":
         return Activity;
       default:
         return Wifi;
@@ -290,48 +288,4 @@ export function SourcesSection({ onBack }: SourcesSectionProps) {
       </div>
     </div>
   );
-
-  function getPlatformIcon(platform: string) {
-    switch (platform.toLowerCase()) {
-      case "tradingview":
-        return Radio;
-      case "metatrader 5":
-        return Activity;
-      default:
-        return Wifi;
-    }
-  }
-
-  function getStatusColor(status: string) {
-    return status === "Active" 
-      ? "bg-green-100 text-green-800" 
-      : "bg-gray-100 text-gray-800";
-  }
-
-  function handleToggleStatus(sourceId: string) {
-    setSources(sources.map(source => 
-      source.id === sourceId 
-        ? { ...source, status: source.status === "Active" ? "Inactive" : "Active" }
-        : source
-    ));
-  }
-
-  function handleEditSource(source: any) {
-    setEditingSource(source);
-  }
-
-  function handleSaveEdit() {
-    if (editingSource) {
-      setSources(sources.map(source => 
-        source.id === editingSource.id ? editingSource : source
-      ));
-      setEditingSource(null);
-    }
-  }
-
-  function handleDeleteSource(sourceId: string) {
-    if (confirm("Are you sure you want to delete this source?")) {
-      setSources(sources.filter(source => source.id !== sourceId));
-    }
-  }
 }

@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -18,33 +19,33 @@ interface DashboardProps {
 }
 
 export function Dashboard({ activeSection, onSectionChange }: DashboardProps) {
-  // Mock data with secret symbols
+  // Mock data with real values instead of symbols
   const stats = [
     {
       title: "Total Balance",
-      value: "$••,•••.••",
-      change: "+••.•%",
+      value: "$12,345.67",
+      change: "+12.5%",
       trend: "up" as const,
       icon: DollarSign,
     },
     {
       title: "Active Signals",
-      value: "••",
-      change: "+•",
+      value: "42",
+      change: "+8",
       trend: "up" as const,
       icon: Activity,
     },
     {
       title: "Users",
-      value: "•••",
-      change: "+••",
+      value: "128",
+      change: "+15",
       trend: "up" as const,
       icon: Users,
     },
     {
       title: "Transactions",
-      value: "•,•••",
-      change: "+•••",
+      value: "1,234",
+      change: "+123",
       trend: "up" as const,
       icon: CreditCard,
     },
@@ -54,46 +55,46 @@ export function Dashboard({ activeSection, onSectionChange }: DashboardProps) {
     {
       id: 1,
       type: "Signal",
-      symbol: "•••/•••",
-      amount: "$•••.••",
+      symbol: "EUR/USD",
+      amount: "$234.56",
       status: "Completed",
-      time: "• min ago"
+      time: "5 min ago"
     },
     {
       id: 2,
       type: "Manual",
-      symbol: "•••/•••", 
-      amount: "$•,•••.••",
+      symbol: "GBP/USD", 
+      amount: "$1,234.78",
       status: "Pending",
-      time: "•• min ago"
+      time: "12 min ago"
     },
     {
       id: 3,
       type: "Signal",
-      symbol: "•••/•••",
-      amount: "$•••.••",
+      symbol: "USD/JPY",
+      amount: "$567.89",
       status: "Completed", 
-      time: "•• min ago"
+      time: "23 min ago"
     },
   ];
 
   const activeSignals = [
     {
       id: 1,
-      pair: "•••/•••",
+      pair: "EUR/USD",
       direction: "BUY",
-      entry: "•.•••••",
-      current: "•.•••••",
-      pnl: "+•••.••",
+      entry: "1.08450",
+      current: "1.08567",
+      pnl: "+234.56",
       status: "Active"
     },
     {
       id: 2,
-      pair: "•••/•••", 
+      pair: "GBP/USD", 
       direction: "SELL",
-      entry: "••,•••.••",
-      current: "••,•••.••",
-      pnl: "-•••.••",
+      entry: "1.26789",
+      current: "1.26654",
+      pnl: "-123.45",
       status: "Active"
     },
   ];
