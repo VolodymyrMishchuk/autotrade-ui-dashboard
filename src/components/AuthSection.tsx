@@ -1,7 +1,7 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { MaskedInput } from "@/components/ui/masked-input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -120,10 +120,9 @@ export function AuthSection({ onLogin }: AuthSectionProps) {
                   <div className="space-y-2">
                     <Label htmlFor="login-password">Password</Label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                      <Input
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4 z-10" />
+                      <MaskedInput
                         id="login-password"
-                        type="password"
                         placeholder="Enter your password"
                         className="pl-10"
                         {...loginForm.register("password", { required: "Password is required" })}
@@ -214,10 +213,9 @@ export function AuthSection({ onLogin }: AuthSectionProps) {
                   <div className="space-y-2">
                     <Label htmlFor="register-password">Password</Label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                      <Input
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4 z-10" />
+                      <MaskedInput
                         id="register-password"
-                        type="password"
                         placeholder="Create a password"
                         className="pl-10"
                         {...registerForm.register("password", { required: "Password is required" })}
@@ -228,10 +226,9 @@ export function AuthSection({ onLogin }: AuthSectionProps) {
                   <div className="space-y-2">
                     <Label htmlFor="confirmPassword">Confirm Password</Label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                      <Input
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4 z-10" />
+                      <MaskedInput
                         id="confirmPassword"
-                        type="password"
                         placeholder="Confirm your password"
                         className="pl-10"
                         {...registerForm.register("confirmPassword", { required: "Please confirm your password" })}

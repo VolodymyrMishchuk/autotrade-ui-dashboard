@@ -1,6 +1,8 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { MaskedInput } from "@/components/ui/masked-input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -30,24 +32,24 @@ export function SourcesSection({ onBack }: SourcesSectionProps) {
   const [sources, setSources] = useState([
     {
       id: "1",
-      name: "••••••••• ••••••",
-      platform: "•••••••••",
+      name: "Expert Forex Signals",
+      platform: "TradingView",
       created_at: "2024-01-15",
       status: "Active",
       signals: "•,•••"
     },
     {
       id: "2",
-      name: "•••••••••• ••••••• •••••••",
-      platform: "•••••••••• •",
+      name: "Professional Trading Advisor",
+      platform: "MetaTrader 5",
       created_at: "2024-01-10",
       status: "Active",
       signals: "•••"
     },
     {
       id: "3",
-      name: "••••••• ••• ••••••",
-      platform: "•••• •••",
+      name: "Market Pro Signals",
+      platform: "Forex Pro",
       created_at: "2024-01-08",
       status: "Inactive",
       signals: "•"
@@ -146,15 +148,15 @@ export function SourcesSection({ onBack }: SourcesSectionProps) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Source Name</Label>
-                <Input id="name" placeholder="••••• ••••••• ••••" />
+                <Input id="name" placeholder="Enter source name" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="platform">Platform</Label>
-                <Input id="platform" placeholder="••••• •••••••• ••••" />
+                <Input id="platform" placeholder="Enter platform name" />
               </div>
               <div className="space-y-2 sm:col-span-2">
                 <Label htmlFor="token">API Token</Label>
-                <Input id="token" type="password" placeholder="••••• ••• •••••" />
+                <MaskedInput id="token" placeholder="••••••••••••••••••••••••••••••••" />
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 pt-4">

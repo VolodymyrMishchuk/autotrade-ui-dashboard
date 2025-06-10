@@ -1,6 +1,8 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { MaskedInput } from "@/components/ui/masked-input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -252,9 +254,8 @@ export function PersonsSection({ onBack }: PersonsSectionProps) {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-sm">Password</Label>
-                <Input 
+                <MaskedInput 
                   id="password" 
-                  type="password" 
                   placeholder="Enter password" 
                   className="text-sm" 
                   value={password}
@@ -266,9 +267,8 @@ export function PersonsSection({ onBack }: PersonsSectionProps) {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="confirm_password" className="text-sm">Confirm Password</Label>
-                <Input 
+                <MaskedInput 
                   id="confirm_password" 
-                  type="password" 
                   placeholder="Confirm password" 
                   className="text-sm" 
                   value={confirmPassword}
