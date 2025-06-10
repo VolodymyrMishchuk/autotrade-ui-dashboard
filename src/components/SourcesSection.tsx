@@ -28,7 +28,7 @@ export function SourcesSection({ onBack }: SourcesSectionProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [editingSource, setEditingSource] = useState<any>(null);
 
-  // Mock data with secret symbols
+  // Mock data
   const [sources, setSources] = useState([
     {
       id: "1",
@@ -36,7 +36,7 @@ export function SourcesSection({ onBack }: SourcesSectionProps) {
       platform: "TradingView",
       created_at: "2024-01-15",
       status: "Active",
-      signals: "•,•••"
+      signals: 42
     },
     {
       id: "2",
@@ -44,7 +44,7 @@ export function SourcesSection({ onBack }: SourcesSectionProps) {
       platform: "MetaTrader 5",
       created_at: "2024-01-10",
       status: "Active",
-      signals: "•••"
+      signals: 38
     },
     {
       id: "3",
@@ -52,7 +52,7 @@ export function SourcesSection({ onBack }: SourcesSectionProps) {
       platform: "Forex Pro",
       created_at: "2024-01-08",
       status: "Inactive",
-      signals: "•"
+      signals: 15
     },
   ]);
 
@@ -156,7 +156,7 @@ export function SourcesSection({ onBack }: SourcesSectionProps) {
               </div>
               <div className="space-y-2 sm:col-span-2">
                 <Label htmlFor="token">API Token</Label>
-                <MaskedInput id="token" placeholder="••••••••••••••••••••••••••••••••" />
+                <MaskedInput id="token" placeholder="Enter your API token" />
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 pt-4">
@@ -290,4 +290,48 @@ export function SourcesSection({ onBack }: SourcesSectionProps) {
       </div>
     </div>
   );
+
+  function getPlatformIcon(platform: string) {
+    switch (platform.toLowerCase()) {
+      case "tradingview":
+        return Radio;
+      case "metatrader 5":
+        return Activity;
+      default:
+        return Wifi;
+    }
+  }
+
+  function getStatusColor(status: string) {
+    return status === "Active" 
+      ? "bg-green-100 text-green-800" 
+      : "bg-gray-100 text-gray-800";
+  }
+
+  function handleToggleStatus(sourceId: string) {
+    setSources(sources.map(source => 
+      source.id === sourceId 
+        ? { ...source, status: source.status === "Active" ? "Inactive" : "Active" }
+        : source
+    ));
+  }
+
+  function handleEditSource(source: any) {
+    setEditingSource(source);
+  }
+
+  function handleSaveEdit() {
+    if (editingSource) {
+      setSources(sources.map(source => 
+        source.id === editingSource.id ? editingSource : source
+      ));
+      setEditingSource(null);
+    }
+  }
+
+  function handleDeleteSource(sourceId: string) {
+    if (confirm("Are you sure you want to delete this source?")) {
+      setSources(sources.filter(source => source.id !== sourceId));
+    }
+  }
 }
