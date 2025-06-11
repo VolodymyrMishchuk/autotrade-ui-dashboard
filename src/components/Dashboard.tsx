@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { 
   TrendingUp, 
   TrendingDown, 
-  DollarSign, 
+  Cash, 
   Activity,
   Users,
   CreditCard,
@@ -29,7 +29,7 @@ export function Dashboard({ activeSection, onSectionChange }: DashboardProps) {
       value: "$12,345.67",
       change: "+12.5%",
       trend: "up" as const,
-      icon: DollarSign,
+      icon: Cash,
     },
     {
       title: "Active Signals",
