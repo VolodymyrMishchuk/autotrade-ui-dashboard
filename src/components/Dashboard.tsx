@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,6 +11,10 @@ import {
   ArrowUpRight,
   ArrowDownRight
 } from "lucide-react";
+import { PersonsSection } from "./PersonsSection";
+import { SourcesSection } from "./SourcesSection";
+import { AccountsSection } from "./AccountsSection";
+import { TransactionsSection } from "./TransactionsSection";
 
 interface DashboardProps {
   activeSection: string;
@@ -99,6 +102,24 @@ export function Dashboard({ activeSection, onSectionChange }: DashboardProps) {
     },
   ];
 
+  // Render different sections based on activeSection
+  if (activeSection === "persons") {
+    return <PersonsSection onBack={() => onSectionChange("dashboard")} />;
+  }
+
+  if (activeSection === "sources") {
+    return <SourcesSection onBack={() => onSectionChange("dashboard")} />;
+  }
+
+  if (activeSection === "accounts") {
+    return <AccountsSection onBack={() => onSectionChange("dashboard")} />;
+  }
+
+  if (activeSection === "transactions") {
+    return <TransactionsSection onBack={() => onSectionChange("dashboard")} />;
+  }
+
+  // Dashboard content (only show when activeSection is "dashboard")
   if (activeSection !== "dashboard") {
     return null;
   }

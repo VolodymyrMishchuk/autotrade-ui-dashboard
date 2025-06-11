@@ -2,21 +2,19 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { MaskedInput } from "@/components/ui/masked-input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Switch } from "@/components/ui/switch";
-import { Toggle } from "@/components/ui/toggle";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { 
   ArrowLeft, 
   Plus, 
   Search, 
   Edit, 
   Trash2, 
-  Mail, 
-  Phone,
-  User
+  User,
+  Mail,
+  Phone
 } from "lucide-react";
 import { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -28,128 +26,68 @@ interface PersonsSectionProps {
 export function PersonsSection({ onBack }: PersonsSectionProps) {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [editingUser, setEditingUser] = useState<any>(null);
+  const [editingPerson, setEditingPerson] = useState<any>(null);
   const [roleFilter, setRoleFilter] = useState("all");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
 
-  // Mock data - in real app this would come from API
-  const [users, setUsers] = useState([
+  // Mock data
+  const [persons, setPersons] = useState([
     {
       id: "1",
-      first_name: "John",
-      last_name: "Doe",
+      name: "John Doe",
       email: "john.doe@example.com",
-      phone_number: "+1234567890",
+      phone: "+1234567890",
       role: "USER",
       type: "Individual",
-      created_at: "2024-01-15",
-      status: "Active"
+      created_at: "2024-01-15"
     },
     {
       id: "2",
-      first_name: "Jane",
-      last_name: "Smith",
+      name: "Jane Smith", 
       email: "jane.smith@example.com",
-      phone_number: "+1234567891",
+      phone: "+1234567891",
       role: "ADMIN",
       type: "Individual",
-      created_at: "2024-01-10",
-      status: "Active"
+      created_at: "2024-01-10"
     },
   ]);
 
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = user.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.last_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase());
+  // Filter persons based on search term and role filter
+  const filteredPersons = persons.filter(person => {
+    const matchesSearch = person.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         person.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         person.phone.includes(searchTerm);
     
-    const matchesRole = roleFilter === "all" || user.role === roleFilter;
+    const matchesRole = roleFilter === "all" || person.role === roleFilter;
     
     return matchesSearch && matchesRole;
   });
 
   const getRoleColor = (role: string) => {
-    switch (role) {
-      case "SUPERADMIN":
-        return "bg-red-100 text-red-800";
-      case "ADMIN":
-        return "bg-blue-100 text-blue-800";
-      default:
-        return "bg-green-100 text-green-800";
-    }
+    return role === "ADMIN" 
+      ? "bg-blue-100 text-blue-800" 
+      : "bg-green-100 text-green-800";
   };
 
-  const handleEditUser = (user: any) => {
-    setEditingUser(user);
+  const handleEditPerson = (person: any) => {
+    setEditingPerson(person);
   };
 
   const handleSaveEdit = () => {
-    if (editingUser) {
-      setUsers(users.map(user => 
-        user.id === editingUser.id ? editingUser : user
+    if (editingPerson) {
+      setPersons(persons.map(p => 
+        p.id === editingPerson.id ? editingPerson : p
       ));
-      setEditingUser(null);
+      setEditingPerson(null);
     }
   };
 
-  const handleDeleteUser = (userId: string) => {
-    if (confirm("Are you sure you want to delete this user?")) {
-      setUsers(users.filter(user => user.id !== userId));
-    }
+  const handleDeletePerson = (personId: string) => {
+    setPersons(persons.filter(person => person.id !== personId));
   };
 
-  const handleToggleStatus = (userId: string) => {
-    setUsers(users.map(user => 
-      user.id === userId 
-        ? { ...user, status: user.status === "Active" ? "Deactivated" : "Active" }
-        : user
-    ));
-  };
-
-  const handleToggleRole = (userId: string) => {
-    setUsers(users.map(user => {
-      if (user.id === userId) {
-        let newRole;
-        switch (user.role) {
-          case "USER":
-            newRole = "ADMIN";
-            break;
-          case "ADMIN":
-            newRole = "SUPERADMIN";
-            break;
-          case "SUPERADMIN":
-            newRole = "USER";
-            break;
-          default:
-            newRole = "USER";
-        }
-        return { ...user, role: newRole };
-      }
-      return user;
-    }));
-  };
-
-  const handleCreateUser = () => {
-    if (password !== confirmPassword) {
-      alert("Passwords do not match!");
-      return;
-    }
-    if (password.length < 6) {
-      alert("Password must be at least 6 characters long!");
-      return;
-    }
-    
-    // Here you would normally create the user
-    alert("User created successfully!");
+  const handleCreatePerson = () => {
+    // This would typically create a new person
     setShowCreateForm(false);
-    setPassword("");
-    setConfirmPassword("");
-  };
-
-  const getPasswordMatchStatus = () => {
-    if (!password || !confirmPassword) return null;
-    return password === confirmPassword;
   };
 
   return (
@@ -175,7 +113,7 @@ export function PersonsSection({ onBack }: PersonsSectionProps) {
       {/* Search and Filters */}
       <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
         <CardContent className="p-4 sm:p-6">
-          <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <div className="flex-1">
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -188,14 +126,13 @@ export function PersonsSection({ onBack }: PersonsSectionProps) {
               </div>
             </div>
             <Select value={roleFilter} onValueChange={setRoleFilter}>
-              <SelectTrigger className="w-full md:w-[180px]">
+              <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue placeholder="Filter by role" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Roles</SelectItem>
-                <SelectItem value="USER">Users</SelectItem>
-                <SelectItem value="ADMIN">Admins</SelectItem>
-                <SelectItem value="SUPERADMIN">Super Admins</SelectItem>
+                <SelectItem value="ADMIN">Admin</SelectItem>
+                <SelectItem value="USER">User</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -207,99 +144,38 @@ export function PersonsSection({ onBack }: PersonsSectionProps) {
         <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
           <CardHeader className="p-4 sm:p-6">
             <CardTitle className="text-lg sm:text-xl">Create New User</CardTitle>
-            <CardDescription className="text-sm sm:text-base">Add a new user to the autotrading system</CardDescription>
+            <CardDescription className="text-sm sm:text-base">Add a new user to the system</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 p-4 sm:p-6 pt-0">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="first_name" className="text-sm">First Name</Label>
-                <Input id="first_name" placeholder="Enter first name" className="text-sm" />
+                <Label htmlFor="name">Full Name</Label>
+                <Input id="name" placeholder="Enter full name" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="last_name" className="text-sm">Last Name</Label>
-                <Input id="last_name" placeholder="Enter last name" className="text-sm" />
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" type="email" placeholder="Enter email address" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm">Email</Label>
-                <Input id="email" type="email" placeholder="Enter email address" className="text-sm" />
+                <Label htmlFor="phone">Phone</Label>
+                <Input id="phone" placeholder="Enter phone number" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="phone" className="text-sm">Phone Number</Label>
-                <Input id="phone" placeholder="Enter phone number" className="text-sm" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="type" className="text-sm">User Type</Label>
+                <Label htmlFor="role">Role</Label>
                 <Select>
-                  <SelectTrigger className="text-sm">
-                    <SelectValue placeholder="Select user type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Individual">Individual</SelectItem>
-                    <SelectItem value="Corporate">Corporate</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="role" className="text-sm">Role</Label>
-                <Select>
-                  <SelectTrigger className="text-sm">
-                    <SelectValue placeholder="Select role" />
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select user role" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="USER">User</SelectItem>
                     <SelectItem value="ADMIN">Admin</SelectItem>
-                    <SelectItem value="SUPERADMIN">Super Admin</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm">Password</Label>
-                <MaskedInput 
-                  id="password" 
-                  placeholder="Enter password" 
-                  className="text-sm" 
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                {password && password.length < 6 && (
-                  <p className="text-xs text-red-500">Password must be at least 6 characters</p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="confirm_password" className="text-sm">Confirm Password</Label>
-                <MaskedInput 
-                  id="confirm_password" 
-                  placeholder="Confirm password" 
-                  className="text-sm" 
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                />
-                {confirmPassword && getPasswordMatchStatus() === false && (
-                  <p className="text-xs text-red-500">Passwords do not match</p>
-                )}
-                {confirmPassword && getPasswordMatchStatus() === true && (
-                  <p className="text-xs text-green-500">Passwords match</p>
-                )}
-              </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 pt-4">
-              <Button 
-                type="submit" 
-                className="w-full sm:w-auto"
-                onClick={handleCreateUser}
-                disabled={!password || !confirmPassword || password !== confirmPassword || password.length < 6}
-              >
-                Create User
-              </Button>
-              <Button 
-                variant="outline" 
-                onClick={() => {
-                  setShowCreateForm(false);
-                  setPassword("");
-                  setConfirmPassword("");
-                }} 
-                className="w-full sm:w-auto"
-              >
+              <Button onClick={handleCreatePerson} className="w-full sm:w-auto">Create User</Button>
+              <Button variant="outline" onClick={() => setShowCreateForm(false)} className="w-full sm:w-auto">
                 Cancel
               </Button>
             </div>
@@ -308,7 +184,7 @@ export function PersonsSection({ onBack }: PersonsSectionProps) {
       )}
 
       {/* Edit User Dialog */}
-      <Dialog open={!!editingUser} onOpenChange={() => setEditingUser(null)}>
+      <Dialog open={!!editingPerson} onOpenChange={() => setEditingPerson(null)}>
         <DialogContent className="w-[95vw] max-w-md mx-auto">
           <DialogHeader>
             <DialogTitle>Edit User</DialogTitle>
@@ -316,27 +192,16 @@ export function PersonsSection({ onBack }: PersonsSectionProps) {
               Update user information and settings
             </DialogDescription>
           </DialogHeader>
-          {editingUser && (
+          {editingPerson && (
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="edit-first-name">First Name</Label>
+                <Label htmlFor="edit-name">Full Name</Label>
                 <Input
-                  id="edit-first-name"
-                  value={editingUser.first_name}
-                  onChange={(e) => setEditingUser({
-                    ...editingUser,
-                    first_name: e.target.value
-                  })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="edit-last-name">Last Name</Label>
-                <Input
-                  id="edit-last-name"
-                  value={editingUser.last_name}
-                  onChange={(e) => setEditingUser({
-                    ...editingUser,
-                    last_name: e.target.value
+                  id="edit-name"
+                  value={editingPerson.name}
+                  onChange={(e) => setEditingPerson({
+                    ...editingPerson,
+                    name: e.target.value
                   })}
                 />
               </div>
@@ -344,19 +209,31 @@ export function PersonsSection({ onBack }: PersonsSectionProps) {
                 <Label htmlFor="edit-email">Email</Label>
                 <Input
                   id="edit-email"
-                  value={editingUser.email}
-                  onChange={(e) => setEditingUser({
-                    ...editingUser,
+                  type="email"
+                  value={editingPerson.email}
+                  onChange={(e) => setEditingPerson({
+                    ...editingPerson,
                     email: e.target.value
+                  })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-phone">Phone</Label>
+                <Input
+                  id="edit-phone"
+                  value={editingPerson.phone}
+                  onChange={(e) => setEditingPerson({
+                    ...editingPerson,
+                    phone: e.target.value
                   })}
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="edit-role">Role</Label>
                 <Select 
-                  value={editingUser.role} 
-                  onValueChange={(value) => setEditingUser({
-                    ...editingUser,
+                  value={editingPerson.role} 
+                  onValueChange={(value) => setEditingPerson({
+                    ...editingPerson,
                     role: value
                   })}
                 >
@@ -366,13 +243,12 @@ export function PersonsSection({ onBack }: PersonsSectionProps) {
                   <SelectContent>
                     <SelectItem value="USER">User</SelectItem>
                     <SelectItem value="ADMIN">Admin</SelectItem>
-                    <SelectItem value="SUPERADMIN">Super Admin</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="flex flex-col sm:flex-row gap-2 pt-4">
                 <Button onClick={handleSaveEdit} className="w-full sm:w-auto">Save Changes</Button>
-                <Button variant="outline" onClick={() => setEditingUser(null)} className="w-full sm:w-auto">
+                <Button variant="outline" onClick={() => setEditingPerson(null)} className="w-full sm:w-auto">
                   Cancel
                 </Button>
               </div>
@@ -383,15 +259,8 @@ export function PersonsSection({ onBack }: PersonsSectionProps) {
 
       {/* Users List */}
       <div className="grid gap-3 sm:gap-4">
-        {filteredUsers.length === 0 && (
-          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-            <CardContent className="p-8 text-center">
-              <p className="text-muted-foreground">No users found matching your criteria.</p>
-            </CardContent>
-          </Card>
-        )}
-        {filteredUsers.map((user) => (
-          <Card key={user.id} className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+        {filteredPersons.map((person) => (
+          <Card key={person.id} className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
             <CardContent className="p-4 sm:p-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex flex-col xs:flex-row xs:items-center gap-3 xs:gap-4 min-w-0 flex-1">
@@ -399,73 +268,67 @@ export function PersonsSection({ onBack }: PersonsSectionProps) {
                     <User className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h3 className="font-semibold text-base sm:text-lg truncate">
-                      {user.first_name} {user.last_name}
-                    </h3>
+                    <h3 className="font-semibold text-base sm:text-lg truncate">{person.name}</h3>
                     <div className="flex flex-col xs:flex-row xs:items-center gap-1 xs:gap-4 text-xs sm:text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1 truncate">
-                        <Mail className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-                        <span className="truncate">{user.email}</span>
+                      <div className="flex items-center gap-1">
+                        <Mail className="w-3 h-3 sm:w-4 sm:h-4" />
+                        <span className="truncate">{person.email}</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <Phone className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-                        <span>{user.phone_number}</span>
+                        <Phone className="w-3 h-3 sm:w-4 sm:h-4" />
+                        <span>{person.phone}</span>
                       </div>
                     </div>
                     <div className="flex flex-wrap items-center gap-1 sm:gap-2 mt-2">
-                      <Badge className={`${getRoleColor(user.role)} text-xs`}>
-                        {user.role}
+                      <Badge className={`${getRoleColor(person.role)} text-xs`}>
+                        {person.role}
                       </Badge>
-                      <Badge variant="outline" className="text-xs">{user.type}</Badge>
-                      <Badge className={`${user.status === "Active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"} text-xs`}>
-                        {user.status}
-                      </Badge>
+                      <Badge variant="outline" className="text-xs">{person.type}</Badge>
                     </div>
                   </div>
                 </div>
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-                  <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-muted-foreground">Status:</span>
-                      <Switch
-                        checked={user.status === "Active"}
-                        onCheckedChange={() => handleToggleStatus(user.id)}
-                      />
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-muted-foreground">Role:</span>
-                      <Toggle
-                        pressed={user.role !== "USER"}
-                        onPressedChange={() => handleToggleRole(user.id)}
-                        className="h-6 px-2 text-xs"
-                      >
-                        {user.role}
-                      </Toggle>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => handleEditUser(user)}
-                      className="h-8 w-8 p-0"
-                    >
-                      <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => handleDeleteUser(user.id)}
-                      className="h-8 w-8 p-0"
-                    >
-                      <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
-                    </Button>
-                  </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => handleEditPerson(person)}
+                    className="h-8 w-8 p-0"
+                  >
+                    <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
+                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                        <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete User</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Are you sure you want to delete {person.name}? This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => handleDeletePerson(person.id)}>
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </div>
             </CardContent>
           </Card>
         ))}
+        {filteredPersons.length === 0 && (
+          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+            <CardContent className="p-8 text-center">
+              <p className="text-muted-foreground">No users found matching your filters.</p>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
