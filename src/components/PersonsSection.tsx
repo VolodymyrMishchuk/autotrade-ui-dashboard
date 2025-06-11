@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { 
@@ -14,7 +15,10 @@ import {
   Trash2, 
   User,
   Mail,
-  Phone
+  Phone,
+  Shield,
+  UserCheck,
+  UserX
 } from "lucide-react";
 import { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -28,8 +32,9 @@ export function PersonsSection({ onBack }: PersonsSectionProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [editingPerson, setEditingPerson] = useState<any>(null);
   const [roleFilter, setRoleFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
 
-  // Mock data
+  // Mock data with extended properties
   const [persons, setPersons] = useState([
     {
       id: "1",
@@ -38,6 +43,7 @@ export function PersonsSection({ onBack }: PersonsSectionProps) {
       phone: "+1234567890",
       role: "USER",
       type: "Individual",
+      isActive: true,
       created_at: "2024-01-15"
     },
     {
@@ -47,25 +53,59 @@ export function PersonsSection({ onBack }: PersonsSectionProps) {
       phone: "+1234567891",
       role: "ADMIN",
       type: "Individual",
+      isActive: true,
       created_at: "2024-01-10"
+    },
+    {
+      id: "3",
+      name: "Mike Johnson", 
+      email: "mike.johnson@example.com",
+      phone: "+1234567892",
+      role: "SUPERADMIN",
+      type: "Individual",
+      isActive: false,
+      created_at: "2024-01-05"
     },
   ]);
 
-  // Filter persons based on search term and role filter
+  // Filter persons based on search term, role filter, and status filter
   const filteredPersons = persons.filter(person => {
     const matchesSearch = person.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          person.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          person.phone.includes(searchTerm);
     
     const matchesRole = roleFilter === "all" || person.role === roleFilter;
+    const matchesStatus = statusFilter === "all" || 
+                         (statusFilter === "active" && person.isActive) ||
+                         (statusFilter === "inactive" && !person.isActive);
     
-    return matchesSearch && matchesRole;
+    return matchesSearch && matchesRole && matchesStatus;
   });
 
   const getRoleColor = (role: string) => {
-    return role === "ADMIN" 
-      ? "bg-blue-100 text-blue-800" 
-      : "bg-green-100 text-green-800";
+    switch (role) {
+      case "SUPERADMIN":
+        return "bg-red-100 text-red-800";
+      case "ADMIN":
+        return "bg-blue-100 text-blue-800";
+      case "USER":
+        return "bg-green-100 text-green-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const getRoleIcon = (role: string) => {
+    switch (role) {
+      case "SUPERADMIN":
+        return Shield;
+      case "ADMIN":
+        return UserCheck;
+      case "USER":
+        return User;
+      default:
+        return User;
+    }
   };
 
   const handleEditPerson = (person: any) => {
@@ -83,6 +123,14 @@ export function PersonsSection({ onBack }: PersonsSectionProps) {
 
   const handleDeletePerson = (personId: string) => {
     setPersons(persons.filter(person => person.id !== personId));
+  };
+
+  const handleToggleUserStatus = (personId: string) => {
+    setPersons(persons.map(person => 
+      person.id === personId 
+        ? { ...person, isActive: !person.isActive }
+        : person
+    ));
   };
 
   const handleCreatePerson = () => {
@@ -131,8 +179,19 @@ export function PersonsSection({ onBack }: PersonsSectionProps) {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Roles</SelectItem>
-                <SelectItem value="ADMIN">Admin</SelectItem>
                 <SelectItem value="USER">User</SelectItem>
+                <SelectItem value="ADMIN">Admin</SelectItem>
+                <SelectItem value="SUPERADMIN">Super Admin</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-full sm:w-[180px]">
+                <SelectValue placeholder="Filter by status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="inactive">Inactive</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -169,8 +228,15 @@ export function PersonsSection({ onBack }: PersonsSectionProps) {
                   <SelectContent>
                     <SelectItem value="USER">User</SelectItem>
                     <SelectItem value="ADMIN">Admin</SelectItem>
+                    <SelectItem value="SUPERADMIN">Super Admin</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+              <div className="space-y-2 sm:col-span-2">
+                <div className="flex items-center space-x-2">
+                  <Switch id="active" defaultChecked />
+                  <Label htmlFor="active">Active user</Label>
+                </div>
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 pt-4">
@@ -243,8 +309,22 @@ export function PersonsSection({ onBack }: PersonsSectionProps) {
                   <SelectContent>
                     <SelectItem value="USER">User</SelectItem>
                     <SelectItem value="ADMIN">Admin</SelectItem>
+                    <SelectItem value="SUPERADMIN">Super Admin</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    id="edit-active" 
+                    checked={editingPerson.isActive}
+                    onCheckedChange={(checked) => setEditingPerson({
+                      ...editingPerson,
+                      isActive: checked
+                    })}
+                  />
+                  <Label htmlFor="edit-active">Active user</Label>
+                </div>
               </div>
               <div className="flex flex-col sm:flex-row gap-2 pt-4">
                 <Button onClick={handleSaveEdit} className="w-full sm:w-auto">Save Changes</Button>
@@ -259,69 +339,92 @@ export function PersonsSection({ onBack }: PersonsSectionProps) {
 
       {/* Users List */}
       <div className="grid gap-3 sm:gap-4">
-        {filteredPersons.map((person) => (
-          <Card key={person.id} className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-            <CardContent className="p-4 sm:p-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="flex flex-col xs:flex-row xs:items-center gap-3 xs:gap-4 min-w-0 flex-1">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
-                    <User className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h3 className="font-semibold text-base sm:text-lg truncate">{person.name}</h3>
-                    <div className="flex flex-col xs:flex-row xs:items-center gap-1 xs:gap-4 text-xs sm:text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <Mail className="w-3 h-3 sm:w-4 sm:h-4" />
-                        <span className="truncate">{person.email}</span>
+        {filteredPersons.map((person) => {
+          const RoleIcon = getRoleIcon(person.role);
+          return (
+            <Card key={person.id} className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="flex flex-col xs:flex-row xs:items-center gap-3 xs:gap-4 min-w-0 flex-1">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+                      <RoleIcon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="font-semibold text-base sm:text-lg truncate">{person.name}</h3>
+                        {person.isActive ? (
+                          <UserCheck className="w-4 h-4 text-green-500" />
+                        ) : (
+                          <UserX className="w-4 h-4 text-red-500" />
+                        )}
                       </div>
-                      <div className="flex items-center gap-1">
-                        <Phone className="w-3 h-3 sm:w-4 sm:h-4" />
-                        <span>{person.phone}</span>
+                      <div className="flex flex-col xs:flex-row xs:items-center gap-1 xs:gap-4 text-xs sm:text-sm text-muted-foreground">
+                        <div className="flex items-center gap-1">
+                          <Mail className="w-3 h-3 sm:w-4 sm:h-4" />
+                          <span className="truncate">{person.email}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Phone className="w-3 h-3 sm:w-4 sm:h-4" />
+                          <span>{person.phone}</span>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-1 sm:gap-2 mt-2">
+                        <Badge className={`${getRoleColor(person.role)} text-xs`}>
+                          {person.role}
+                        </Badge>
+                        <Badge variant="outline" className="text-xs">{person.type}</Badge>
+                        <Badge 
+                          variant="outline" 
+                          className={`text-xs ${person.isActive ? 'text-green-700 border-green-300' : 'text-red-700 border-red-300'}`}
+                        >
+                          {person.isActive ? 'Active' : 'Inactive'}
+                        </Badge>
                       </div>
                     </div>
-                    <div className="flex flex-wrap items-center gap-1 sm:gap-2 mt-2">
-                      <Badge className={`${getRoleColor(person.role)} text-xs`}>
-                        {person.role}
-                      </Badge>
-                      <Badge variant="outline" className="text-xs">{person.type}</Badge>
+                  </div>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <div className="flex items-center space-x-2">
+                      <Switch 
+                        checked={person.isActive}
+                        onCheckedChange={() => handleToggleUserStatus(person.id)}
+                        size="sm"
+                      />
                     </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => handleEditPerson(person)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                          <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete User</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to delete {person.name}? This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleDeletePerson(person.id)}>
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => handleEditPerson(person)}
-                    className="h-8 w-8 p-0"
-                  >
-                    <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
-                  </Button>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="outline" size="sm" className="h-8 w-8 p-0">
-                        <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Delete User</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Are you sure you want to delete {person.name}? This action cannot be undone.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleDeletePerson(person.id)}>
-                          Delete
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent>
+            </Card>
+          );
+        })}
         {filteredPersons.length === 0 && (
           <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
             <CardContent className="p-8 text-center">
